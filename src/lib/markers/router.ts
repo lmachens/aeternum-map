@@ -10,9 +10,13 @@ import { postToDiscord } from '../discord';
 import { getCommentsCollection } from '../comments/collection';
 import type { CommentDTO } from '../comments/types';
 import { SCREENSHOTS_PATH } from '../env';
+import { getScreenshotsCollection } from '../screenshots/collection';
+import { isModerator } from '../security';
 
 const markersRouter = Router();
 
+const MAX_NAME_LENGTH = 50;
+const MAX_DESCRIPTION_LENGTH = 200;
 markersRouter.get('/', async (_req, res, next) => {
   try {
     const markers = await getMarkersCollection()
@@ -56,6 +60,11 @@ markersRouter.get('/:markerId', async (req, res, next) => {
 
 markersRouter.delete('/:markerId', async (req, res, next) => {
   try {
+    const { secret } = req.query;
+    if (!isModerator(secret)) {
+      res.status(403).send('💀 no access');
+      return;
+    }
     const { markerId } = req.params;
     const { userId } = req.body;
 
@@ -91,6 +100,7 @@ markersRouter.delete('/:markerId', async (req, res, next) => {
     await getCommentsCollection().deleteMany({
       markerId: new ObjectId(markerId),
     });
+
     if (marker.screenshotFilename) {
       await fs
         .rm(`${SCREENSHOTS_PATH}/${marker.screenshotFilename}`)
@@ -99,7 +109,11 @@ markersRouter.delete('/:markerId', async (req, res, next) => {
             `Could not remove screenshot ${marker.screenshotFilename}`
           )
         );
+      await getScreenshotsCollection().deleteOne({
+        filename: marker.screenshotFilename,
+      });
     }
+
     res.status(200).json({});
     postToDiscord(
       `📌💀 Marker from ${marker.username} deleted by ${user.username}`
@@ -112,28 +126,55 @@ markersRouter.delete('/:markerId', async (req, res, next) => {
 markersRouter.patch('/:markerId', async (req, res, next) => {
   try {
     const { markerId } = req.params;
-    const { screenshotFilename } = req.body;
+    const { screenshotFilename, screenshotId, userId } = req.body; // screenshotFilename is deprecated and will be removed soon
 
-    if (typeof screenshotFilename !== 'string' || !ObjectId.isValid(markerId)) {
+    if (
+      (typeof screenshotFilename !== 'string' &&
+        !ObjectId.isValid(screenshotId)) ||
+      !ObjectId.isValid(markerId)
+    ) {
       res.status(400).send('Invalid payload');
       return;
     }
-
-    const result = await getMarkersCollection().updateOne(
-      {
-        _id: new ObjectId(markerId),
-      },
-      {
-        $set: {
-          screenshotFilename,
-        },
+    let newScreenshotFilename = screenshotFilename;
+    if (screenshotId) {
+      const screenshot = await getScreenshotsCollection().findOne({
+        _id: new ObjectId(screenshotId),
+      });
+      if (!screenshot) {
+        res.status(404).send('Screenshot not found');
+        return;
       }
-    );
+      newScreenshotFilename = screenshot.filename;
+    }
+
+    const user = await getUsersCollection().findOne({
+      _id: new ObjectId(userId),
+    });
+    if (!user) {
+      res.status(401).send('No access');
+      return;
+    }
+    const query: Filter<MarkerDTO> = {
+      _id: new ObjectId(markerId),
+    };
+    if (!user.isModerator) {
+      query.$or = [
+        { username: user.username },
+        { screenshotFilename: { $exists: false } },
+      ];
+    }
+
+    const result = await getMarkersCollection().updateOne(query, {
+      $set: {
+        screenshotFilename: newScreenshotFilename,
+      },
+    });
     if (!result.modifiedCount) {
       res.status(404).end(`No marker found for id ${markerId}`);
       return;
     }
-    res.status(200).json(screenshotFilename);
+    res.status(200).json(newScreenshotFilename);
   } catch (error) {
     next(error);
   }
@@ -141,6 +182,12 @@ markersRouter.patch('/:markerId', async (req, res, next) => {
 
 markersRouter.post('/', async (req, res, next) => {
   try {
+    const { secret } = req.query;
+    if (!isModerator(secret)) {
+      res.status(403).send('💀 no access');
+      return;
+    }
+
     const {
       type,
       position,
@@ -150,6 +197,7 @@ markersRouter.post('/', async (req, res, next) => {
       levelRange,
       description,
       screenshotFilename,
+      screenshotId,
     } = req.body;
 
     if (
@@ -158,6 +206,11 @@ markersRouter.post('/', async (req, res, next) => {
       !Array.isArray(position)
     ) {
       res.status(400).send('Invalid payload');
+      return;
+    }
+    const existingUser = await getUsersCollection().findOne({ username });
+    if (!existingUser) {
+      res.status(400).send('User does not exist');
       return;
     }
     const marker: MarkerDTO = {
@@ -170,16 +223,26 @@ markersRouter.post('/', async (req, res, next) => {
     };
 
     if (name) {
-      marker.name = name;
+      marker.name = name.substring(0, MAX_NAME_LENGTH);
     }
     if (level) {
       marker.level = level;
     }
     if (description) {
-      marker.description = description;
+      marker.description = description.substring(0, MAX_DESCRIPTION_LENGTH);
     }
     if (screenshotFilename) {
+      // Deprecated -> will be removed soon
       marker.screenshotFilename = screenshotFilename;
+    } else if (screenshotId) {
+      const screenshot = await getScreenshotsCollection().findOne({
+        _id: new ObjectId(screenshotId),
+      });
+      if (!screenshot) {
+        res.status(404).send('Screenshot not found');
+        return;
+      }
+      marker.screenshotFilename = screenshot.filename;
     }
     if (levelRange) {
       marker.levelRange = levelRange;
@@ -208,18 +271,18 @@ markersRouter.post('/', async (req, res, next) => {
       }
     }
 
+    const mapFilter = mapFilters.find((filter) => filter.type === marker.type);
+    if (!mapFilter) {
+      res.status(400).send('Invalid filter type');
+      return;
+    }
+
     const inserted = await getMarkersCollection().insertOne(marker);
     if (!inserted.acknowledged) {
       res.status(500).send('Error inserting marker');
       return;
     }
     res.status(200).json(marker);
-
-    const mapFilter = mapFilters.find((filter) => filter.type === marker.type);
-    if (!mapFilter) {
-      console.error(`Unknown type ${marker.type}`);
-      return;
-    }
 
     await postToDiscord(
       `📌 ${mapFilter.title} was added by ${marker.username} at [${position}]`
@@ -255,6 +318,11 @@ markersRouter.post('/:markerId/comments', async (req, res, next) => {
     });
     if (!marker) {
       res.status(404).send("Marker doesn't exists");
+      return;
+    }
+    const existingUser = await getUsersCollection().findOne({ username });
+    if (!existingUser) {
+      res.status(400).send('User does not exist');
       return;
     }
     const inserted = await getCommentsCollection().insertOne(comment);

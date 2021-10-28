@@ -8,7 +8,13 @@ export async function fetchJSON<T>(
   url: RequestInfo,
   init?: RequestInit | undefined
 ): Promise<T> {
-  const response = await fetch(`${VITE_API_ENDPOINT}${url}`, init);
+  const secret = localStorage.getItem('secret');
+  const hasQuery = url.toString().includes('?');
+  const response = await fetch(
+    `${VITE_API_ENDPOINT}${url}${hasQuery ? '&' : '?'}secret=${secret}`,
+    init
+  );
+
   if (!response.ok) {
     if (response.headers.get('Content-Type')?.includes('application/json')) {
       const body = await response.json();

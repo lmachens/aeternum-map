@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import fs from 'fs/promises';
 import multer from 'multer';
 import { SCREENSHOTS_PATH } from '../env';
+import { getScreenshotsCollection } from './collection';
 
 const screenshotsUpload = multer({ dest: SCREENSHOTS_PATH });
 
@@ -20,8 +21,15 @@ screenshotsRouter.post(
       const filePath = `${req.file.path}.webp`;
       await sharp(req.file.path).webp().toFile(filePath);
       await fs.rm(req.file.path);
-      res.json({
+
+      const screenshot = await getScreenshotsCollection().insertOne({
         filename: `${req.file.filename}.webp`,
+        createdAt: new Date(),
+      });
+
+      res.json({
+        screenshotId: screenshot.insertedId,
+        filename: `${req.file.filename}.webp`, // Deprecated -> will be be removed soon
       });
     } catch (error) {
       next(error);

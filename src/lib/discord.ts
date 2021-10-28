@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import { DISCORD_PUBLIC_WEBHOOK_URL, DISCORD_PRIVATE_WEBHOOK_URL } from './env';
 
+const MAX_DISCORD_MESSAGE_LENGTH = 2000;
 export function postToDiscord(
   content: string,
   isPublic = true
@@ -15,7 +16,7 @@ export function postToDiscord(
     },
     body: JSON.stringify({
       username: 'BottyMcBotface',
-      content,
+      constent: content.substring(0, MAX_DISCORD_MESSAGE_LENGTH),
     }),
   });
 }

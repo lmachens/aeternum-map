@@ -36,15 +36,15 @@ function MarkerDetails({ marker }: MarkerDetailsProps): JSX.Element {
   const { refresh: refreshMarkers } = useMarkers();
   const user = useUser();
 
-  async function handleUploadScreenshot(
-    screenshotFilename?: string | undefined
-  ) {
+  async function handleUploadScreenshot(screenshotId?: string) {
     try {
       closeLatestModal();
-      if (!screenshotFilename || !fullMarker) {
+      if (!screenshotId || !fullMarker) {
         return;
       }
-      await notify(patchMarker(marker._id, screenshotFilename));
+      const screenshotFilename = await notify(
+        patchMarker(marker._id, screenshotId, user?._id)
+      );
       fullMarker.screenshotFilename = screenshotFilename;
       refreshMarkers();
     } catch (error) {

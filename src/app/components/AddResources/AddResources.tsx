@@ -32,7 +32,7 @@ function AddResources(): JSX.Element {
     null
   );
 
-  async function handleUploadScreenshot(screenshotFilename?: string) {
+  async function handleUploadScreenshot(screenshotId?: string) {
     if (!filter || !position || !user) {
       return;
     }
@@ -41,7 +41,7 @@ function AddResources(): JSX.Element {
         type: filter.type,
         position: position || undefined,
         username: user.username,
-        screenshotFilename,
+        screenshotId,
         ...details,
       };
 

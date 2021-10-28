@@ -57,7 +57,7 @@ function UploadScreenshot({ onUpload }: UploadScreenshotProps): JSX.Element {
           return;
         }
         const result = await notify(uploadScreenshot(blob));
-        onUpload(result.filename);
+        onUpload(result.screenshotId);
         setIsUploading(false);
       });
     }

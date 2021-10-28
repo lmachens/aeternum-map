@@ -3,6 +3,7 @@ import type { Filter } from 'mongodb';
 import { ObjectId } from 'mongodb';
 import { postToDiscord } from '../discord';
 import { getMarkersCollection } from '../markers/collection';
+import { isModerator } from '../security';
 import { getUsersCollection } from '../users/collection';
 import { getCommentsCollection } from './collection';
 import type { CommentDTO } from './types';
@@ -10,6 +11,12 @@ import type { CommentDTO } from './types';
 const commentsRouter = Router();
 
 commentsRouter.delete('/:commentId', async (req, res) => {
+  const { secret } = req.query;
+  if (!isModerator(secret)) {
+    res.status(403).send('💀 no access');
+    return;
+  }
+
   const { commentId } = req.params;
   const { userId } = req.body;
 

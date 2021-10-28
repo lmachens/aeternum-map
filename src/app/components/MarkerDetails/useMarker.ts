@@ -10,7 +10,7 @@ export type Comment = {
   message: string;
 };
 
-type MarkerFull = {
+export type MarkerFull = {
   type: string;
   position: [number, number, number];
   name?: string;

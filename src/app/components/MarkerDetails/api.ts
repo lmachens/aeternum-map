@@ -12,14 +12,19 @@ export function patchUser(username: string, hiddenMarkerIds: string[]) {
   });
 }
 
-export function patchMarker(markerId: string, screenshotFilename: string) {
-  return fetchJSON(`/api/markers/${markerId}`, {
+export function patchMarker(
+  markerId: string,
+  screenshotId: string,
+  userId?: string
+) {
+  return fetchJSON<string>(`/api/markers/${markerId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      screenshotFilename,
+      screenshotId,
+      userId,
     }),
   });
 }

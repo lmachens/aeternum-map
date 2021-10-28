@@ -29,6 +29,7 @@ import passport from 'passport';
 import { FIFTEEN_MINUTES } from './lib/constants';
 import http from 'http';
 import initUnauthorized from './lib/unauthorized';
+import { initScreenshotsCollection } from './lib/screenshots/collection';
 
 if (typeof PORT !== 'string') {
   throw new Error('PORT is not set');
@@ -123,6 +124,7 @@ connectToMongoDb(MONGODB_URI).then(async () => {
     initMarkersCollection(),
     initMarkerRoutesCollection(),
     initUsersCollection(),
+    initScreenshotsCollection(),
   ]);
 
   const server = http.createServer(app);

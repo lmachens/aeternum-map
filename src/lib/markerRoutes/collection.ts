@@ -20,7 +20,7 @@ function ensureMarkerRoutesSchema(): Promise<Document> {
     validator: {
       $jsonSchema: {
         bsonType: 'object',
-        title: 'Comment',
+        title: 'Marker Route',
         properties: {
           _id: {
             bsonType: 'objectId',
