@@ -40,6 +40,7 @@ The following list shows the variables you need to set:
 | MONGODB_URI       | URI of your MongoDB server                                      |
 | VITE_API_ENDPOINT | URL of your server environment                                  |
 | SCREENSHOTS_PATH  | Server side path to a folder in which screenshots will be saved |
+| SESSION_SECRET    | Session secret                                                  |
 
 ### Install dependencies
 
