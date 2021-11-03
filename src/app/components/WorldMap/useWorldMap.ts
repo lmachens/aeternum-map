@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import 'tilelayer-canvas';
 import { coordinates as playerCoordinates } from './usePlayerPosition';
 import { getJSONItem, setJSONItem } from '../../utils/storage';
+import { drawRegions } from './regions';
 const { VITE_API_ENDPOINT } = import.meta.env;
 
 function toThreeDigits(number: number): string {
@@ -148,6 +149,7 @@ function useWorldMap({
     const worldTiles = new WorldTiles();
     worldTiles.addTo(map);
 
+    drawRegions(map);
     return () => {
       setLeafletMap(null);
       map.remove();
