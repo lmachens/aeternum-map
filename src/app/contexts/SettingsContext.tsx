@@ -8,12 +8,16 @@ type SettingsContextValue = {
   setMarkerSize: (markerSize: number) => void;
   markerShowBackground: boolean;
   setMarkerShowBackground: (markerShowBackground: boolean) => void;
+  showRegionBorders: boolean;
+  setShowRegionBorders: (markerShowBackground: boolean) => void;
 };
 const SettingsContext = createContext<SettingsContextValue>({
   markerSize: 30,
   setMarkerSize: () => undefined,
   markerShowBackground: true,
   setMarkerShowBackground: () => undefined,
+  showRegionBorders: true,
+  setShowRegionBorders: () => undefined,
 });
 
 type SettingsProviderProps = {
@@ -27,6 +31,10 @@ export function SettingsProvider({
     'markerShowBackground',
     true
   );
+  const [showRegionBorders, setShowRegionBorders] = usePersistentState(
+    'showRegionBorders',
+    true
+  );
 
   return (
     <SettingsContext.Provider
@@ -35,6 +43,8 @@ export function SettingsProvider({
         setMarkerSize,
         markerShowBackground,
         setMarkerShowBackground,
+        showRegionBorders,
+        setShowRegionBorders,
       }}
     >
       {children}

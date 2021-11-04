@@ -15,6 +15,8 @@ function Settings(): JSX.Element {
     setMarkerSize,
     markerShowBackground,
     setMarkerShowBackground,
+    showRegionBorders,
+    setShowRegionBorders,
   } = useSettings();
   const showHideAppBinding = useHotkeyBinding(SHOW_HIDE_APP);
   const setupMinimapBinding = useHotkeyBinding(SETUP_MINIMAP);
@@ -25,7 +27,7 @@ function Settings(): JSX.Element {
   return (
     <div className={styles.container}>
       <h2>Settings</h2>
-      <h3>Markers</h3>
+      <h3>Map</h3>
       <label className={styles.label}>
         Marker size
         <input
@@ -37,11 +39,19 @@ function Settings(): JSX.Element {
         />
       </label>
       <label className={styles.label}>
-        Show background
+        Marker background
         <input
           type="checkbox"
           checked={markerShowBackground}
           onChange={(event) => setMarkerShowBackground(event.target.checked)}
+        />
+      </label>
+      <label className={styles.label}>
+        Region borders
+        <input
+          type="checkbox"
+          checked={showRegionBorders}
+          onChange={(event) => setShowRegionBorders(event.target.checked)}
         />
       </label>
       <h3>Hotkeys</h3>

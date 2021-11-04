@@ -48,13 +48,14 @@ function useLayerGroups({
       isFirstRender.current = false;
       return;
     }
+
     const handle = setTimeout(() => {
+      const markersLayerGroup = markersLayerGroupRef.current;
       const allLayers = allLayersRef.current;
       const allMarkers = Object.values(allLayers);
       if (allMarkers.length === 0 || !leafletMap) {
         return;
       }
-      let clearedCanvas = false;
       allMarkers.forEach(({ layer }) => {
         if (
           layer.options.image.size[0] === markerSize &&
@@ -63,17 +64,14 @@ function useLayerGroups({
         ) {
           return;
         }
-        if (!clearedCanvas) {
-          clearedCanvas = true;
-          const renderer = leafletMap.getRenderer(layer);
 
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          renderer._clear();
-        }
         layer.options.image.size = [markerSize, markerSize];
         layer.options.image.showBackground = markerShowBackground;
-        layer._updatePath();
+        const isVisible = markersLayerGroup.hasLayer(layer);
+        markersLayerGroup.removeLayer(layer);
+        if (isVisible) {
+          markersLayerGroup.addLayer(layer);
+        }
       });
     }, 200);
 
