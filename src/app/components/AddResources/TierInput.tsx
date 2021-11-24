@@ -8,7 +8,7 @@ type TierInputProps = {
 };
 
 function TierInput({ value, onChange ,max}: TierInputProps): JSX.Element {
-  let tiers = [1]
+  let tiers = []
   switch(max) {
     case 3:
       tiers = [1,2,3]
