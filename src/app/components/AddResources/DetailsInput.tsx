@@ -47,7 +47,7 @@ function DetailsInput({
             />
           </label>
         )}
-        {filter?.category === 'chests' && (
+        {filter?.category === 'chests' && filter?.type.includes('Supplies') && (
           <>
             <label className={styles.label}>
               <span className={generalStyles.key}>Chest Type</span>
@@ -68,11 +68,16 @@ function DetailsInput({
                 <option value="Weaving">Weaving</option>
               </select>
             </label>
+          </>
+        )}
+        {filter?.category === 'chests' && (
+          <>
             <label className={styles.label}>
               <span className={generalStyles.key}>Tier</span>
               <TierInput
                 onChange={(tier) => onChange({ ...details, tier })}
                 value={details.tier || 0}
+                max={filter.maxTier || 5}
               />
             </label>
           </>

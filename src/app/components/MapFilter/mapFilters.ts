@@ -7,6 +7,7 @@ export type FilterItem = {
   iconUrl: string;
   hasName?: boolean;
   hasLevel?: boolean;
+  maxTier?: number;
 };
 
 export const mapFilters: FilterItem[] = [
@@ -45,76 +46,106 @@ export const mapFilters: FilterItem[] = [
     iconUrl: '/pois/spiritShrine.webp',
     hasName: true,
   },
-  {
-    category: 'chests',
-    type: 'chestsEliteAlchemy',
-    title: i18n('Alchemy Elite'),
-    iconUrl: '/pois/chest_elite1.webp',
-  },
+  //{
+  //  category: 'chests',
+  //  type: 'chestsEliteAlchemy',
+  //  title: i18n('Elite Alchemy Stockpile'),
+  //  iconUrl: '/pois/chest_elite1.webp',
+  //},
   {
     category: 'chests',
     type: 'chestsEliteAncient',
-    title: i18n('Ancient Elite'),
+    title: i18n('Elite Ancient Chest'),
     iconUrl: '/pois/chest_elite2.webp',
   },
-  {
-    category: 'chests',
-    type: 'chestsEliteProvisions',
-    title: i18n('Provisions Elite'),
-    iconUrl: '/pois/chest_elite3.webp',
-  },
+  //{
+  //  category: 'chests',
+  //  type: 'chestsEliteProvisions',
+  //  title: i18n('Elite Provisions Stockpile'),
+  //  iconUrl: '/pois/chest_elite3.webp',
+  //},
   {
     category: 'chests',
     type: 'chestsEliteSupplies',
-    title: i18n('Supplies Elite'),
+    title: i18n('Elite Supply Stockpile'),
     iconUrl: '/pois/chest_elite4.webp',
   },
   {
     category: 'chests',
     type: 'chestsLargeAlchemy',
-    title: i18n('Alchemy Large'),
+    title: i18n('Alchemy Stockpile'),
     iconUrl: '/pois/chest_large1.webp',
+    maxTier: 3,
   },
   {
     category: 'chests',
     type: 'chestsLargeAncient',
-    title: i18n('Ancient Large'),
+    title: i18n('Ancient Chest'),
     iconUrl: '/pois/chest_large2.webp',
   },
   {
     category: 'chests',
     type: 'chestsLargeProvisions',
-    title: i18n('Provisions Large'),
+    title: i18n('Provisions Stockpile'),
     iconUrl: '/pois/chest_large3.webp',
+    maxTier: 3,
   },
   {
     category: 'chests',
     type: 'chestsLargeSupplies',
-    title: i18n('Supplies Large'),
+    title: i18n('Supply Stockpile'),
     iconUrl: '/pois/chest_large4.webp',
   },
   {
     category: 'chests',
+    type: 'chestsMediumAlchemy',
+    title: i18n('Alchemy Crate'),
+    iconUrl: '/pois/chest_medium1.webp',
+    maxTier: 3,
+  },
+  {
+    category: 'chests',
+    type: 'chestsMediumAncient',
+    title: i18n('Ancient Coffer'),
+    iconUrl: '/pois/chest_medium2.webp',
+  },
+  {
+    category: 'chests',
+    type: 'chestsMediumProvisions',
+    title: i18n('Provisions Crate'),
+    iconUrl: '/pois/chest_medium3.webp',
+    maxTier: 3,
+  },
+  {
+    category: 'chests',
+    type: 'chestsMediumSupplies',
+    title: i18n('Supply Crate'),
+    iconUrl: '/pois/chest_medium4.webp',
+  },
+  {
+    category: 'chests',
     type: 'chestsCommonAlchemy',
-    title: i18n('Alchemy Common'),
+    title: i18n('Alchemy Cache'),
     iconUrl: '/pois/chest_common1.webp',
+    maxTier: 3,
   },
   {
     category: 'chests',
     type: 'chestsCommonAncient',
-    title: i18n('Ancient Common'),
+    title: i18n('Ancient Urn'),
     iconUrl: '/pois/chest_common2.webp',
   },
   {
     category: 'chests',
     type: 'chestsCommonProvisions',
-    title: i18n('Provisions Common'),
+    title: i18n('Provisions Cache'),
     iconUrl: '/pois/chest_common3.webp',
+    maxTier: 3,
   },
   {
     category: 'chests',
     type: 'chestsCommonSupplies',
-    title: i18n('Supplies Common'),
+    title: i18n('Supply Cache'),
     iconUrl: '/pois/chest_common4.webp',
   },
   {

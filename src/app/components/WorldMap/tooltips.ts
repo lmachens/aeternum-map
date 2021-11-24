@@ -7,8 +7,16 @@ export function getTooltipContent(
   mapFilter: FilterItem
 ): () => string {
   return () => {
-    if (mapFilter.category === 'chests') {
-      let content = `${markerOrDetails.chestType || mapFilter.title} Chest`;
+    if (mapFilter.category === 'chests' && mapFilter.type.includes('Supplies')  ) {
+      let chestname = mapFilter.title.split(" ").pop();
+      let content = `${markerOrDetails.chestType  || mapFilter.title.split(" ").slice(0, -1).join(" ")} ${chestname}`;
+      if (markerOrDetails.tier) {
+        content += ` T${markerOrDetails.tier}`;
+      }
+      return content;
+    }
+    if (mapFilter.category === 'chests' ) {
+      let content = `${mapFilter.title}`;
       if (markerOrDetails.tier) {
         content += ` T${markerOrDetails.tier}`;
       }
