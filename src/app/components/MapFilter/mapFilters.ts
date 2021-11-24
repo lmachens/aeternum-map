@@ -122,13 +122,13 @@ export const mapFilters: FilterItem[] = [
     title: i18n('Supply Crate'),
     iconUrl: '/pois/chest_medium4.webp',
   },
-  {
-    category: 'chests',
-    type: 'chestsCommonAlchemy',
-    title: i18n('Alchemy Cache'),
-    iconUrl: '/pois/chest_common1.webp',
-    maxTier: 3,
-  },
+  //{
+  //  category: 'chests',
+  //  type: 'chestsCommonAlchemy',
+  //  title: i18n('Alchemy Cache'),
+  //  iconUrl: '/pois/chest_common1.webp',
+  //  maxTier: 3,
+  //},
   {
     category: 'chests',
     type: 'chestsCommonAncient',
