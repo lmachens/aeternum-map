@@ -7,20 +7,20 @@ type TierInputProps = {
   max: number;
 };
 
-function TierInput({ value, onChange ,max}: TierInputProps): JSX.Element {
-  let tiers = []
-  switch(max) {
+function TierInput({ value, onChange, max }: TierInputProps): JSX.Element {
+  let tiers = [];
+  switch (max) {
     case 3:
-      tiers = [1,2,3]
+      tiers = [1, 2, 3];
       break;
     case 5:
-      tiers = [1,2,3,4,5]
+      tiers = [1, 2, 3, 4, 5];
       break;
     case 8:
-      tiers = [1,2,3,4,5,6,7,8]
+      tiers = [1, 2, 3, 4, 5, 6, 7, 8];
       break;
     default:
-      tiers = [5]
+      tiers = [5];
   }
   return (
     <div className={styles.container}>
@@ -32,7 +32,7 @@ function TierInput({ value, onChange ,max}: TierInputProps): JSX.Element {
           {tier}
           <input
             type="radio"
-            name={"tier" + max }
+            name={'tier' + max}
             checked={value === tier}
             onChange={() => onChange(tier)}
           />
