@@ -48,39 +48,35 @@ function DetailsInput({
           </label>
         )}
         {filter?.category === 'chests' && filter?.type.includes('Supplies') && (
-          <>
-            <label className={styles.label}>
-              <span className={generalStyles.key}>Chest Type</span>
-              <select
-                value={details.chestType || ''}
-                onChange={(event) =>
-                  onChange({ ...details, chestType: event.target.value })
-                }
-              >
-                <option value="Supply">Supply</option>
-                <option value="Blacksmith">Blacksmith</option>
-                <option value="Carpentry">Carpentry</option>
-                <option value="Engineering">Engineering</option>
-                <option value="Farmland">Farmland</option>
-                <option value="Outfitting">Outfitting</option>
-                <option value="Smelting">Smelting</option>
-                <option value="Tanning">Tanning</option>
-                <option value="Weaving">Weaving</option>
-              </select>
-            </label>
-          </>
+          <label className={styles.label}>
+            <span className={generalStyles.key}>Chest Type</span>
+            <select
+              value={details.chestType || ''}
+              onChange={(event) =>
+                onChange({ ...details, chestType: event.target.value })
+              }
+            >
+              <option value="Supply">Supply</option>
+              <option value="Blacksmith">Blacksmith</option>
+              <option value="Carpentry">Carpentry</option>
+              <option value="Engineering">Engineering</option>
+              <option value="Farmland">Farmland</option>
+              <option value="Outfitting">Outfitting</option>
+              <option value="Smelting">Smelting</option>
+              <option value="Tanning">Tanning</option>
+              <option value="Weaving">Weaving</option>
+            </select>
+          </label>
         )}
         {filter?.category === 'chests' && (
-          <>
-            <label className={styles.label}>
-              <span className={generalStyles.key}>Tier</span>
-              <TierInput
-                onChange={(tier) => onChange({ ...details, tier })}
-                value={details.tier || 0}
-                max={filter.maxTier || 5}
-              />
-            </label>
-          </>
+          <label className={styles.label}>
+            <span className={generalStyles.key}>Tier</span>
+            <TierInput
+              onChange={(tier) => onChange({ ...details, tier })}
+              value={details.tier || 0}
+              max={filter.maxTier || 5}
+            />
+          </label>
         )}
         <label className={styles.label}>
           <span className={generalStyles.key}>Description (optional)</span>
