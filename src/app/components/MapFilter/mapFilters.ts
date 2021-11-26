@@ -46,24 +46,12 @@ export const mapFilters: FilterItem[] = [
     iconUrl: '/pois/spiritShrine.webp',
     hasName: true,
   },
-  //{
-  //  category: 'chests',
-  //  type: 'chestsEliteAlchemy',
-  //  title: i18n('Elite Alchemy Stockpile'),
-  //  iconUrl: '/pois/chest_elite1.webp',
-  //},
   {
     category: 'chests',
     type: 'chestsEliteAncient',
     title: i18n('Elite Ancient Chest'),
     iconUrl: '/pois/chest_elite2.webp',
   },
-  //{
-  //  category: 'chests',
-  //  type: 'chestsEliteProvisions',
-  //  title: i18n('Elite Provisions Stockpile'),
-  //  iconUrl: '/pois/chest_elite3.webp',
-  //},
   {
     category: 'chests',
     type: 'chestsEliteSupplies',
@@ -122,13 +110,6 @@ export const mapFilters: FilterItem[] = [
     title: i18n('Supply Crate'),
     iconUrl: '/pois/chest_medium4.webp',
   },
-  //{
-  //  category: 'chests',
-  //  type: 'chestsCommonAlchemy',
-  //  title: i18n('Alchemy Cache'),
-  //  iconUrl: '/pois/chest_common1.webp',
-  //  maxTier: 3,
-  //},
   {
     category: 'chests',
     type: 'chestsCommonAncient',
