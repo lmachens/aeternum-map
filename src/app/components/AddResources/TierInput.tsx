@@ -8,24 +8,25 @@ type TierInputProps = {
 };
 
 function TierInput({ value, onChange, max }: TierInputProps): JSX.Element {
+  const tiers = Array(max)
+    .fill(null)
+    .map((_, index) => index + 1);
   return (
     <div className={styles.container}>
-      {Array(max)
-        .fill(null)
-        .map((_, index) => (
-          <label
-            key={index + 1}
-            className={classNames(styles.label, value === max && styles.active)}
-          >
-            {index + 1}
-            <input
-              type="radio"
-              name={'tier' + max}
-              checked={value === index}
-              onChange={() => onChange(index)}
-            />
-          </label>
-        ))}
+      {tiers.map((tier) => (
+        <label
+          key={tier}
+          className={classNames(styles.label, value === tier && styles.active)}
+        >
+          {tier}
+          <input
+            type="radio"
+            name={'tier' + max}
+            checked={value === tier}
+            onChange={() => onChange(tier)}
+          />
+        </label>
+      ))}
     </div>
   );
 }
