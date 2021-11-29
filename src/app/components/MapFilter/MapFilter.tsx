@@ -55,7 +55,7 @@ function MapFilter({
 
   useDebounce(
     isOpen,
-    () => latestLeafletMap?.invalidateSize({ pan: false }),
+    () => latestLeafletMap?.invalidateSize({ pan: true }),
     300
   );
 
