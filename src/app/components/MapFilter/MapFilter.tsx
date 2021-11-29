@@ -55,8 +55,8 @@ function MapFilter({
 
   useDebounce(
     isOpen,
-    () => latestLeafletMap?.invalidateSize({ pan: true }),
-    300
+    () => latestLeafletMap?.invalidateSize({ pan: true, animate: true }),
+    400
   );
 
   function handleViewClick(view: View) {
