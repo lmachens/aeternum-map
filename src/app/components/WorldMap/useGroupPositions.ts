@@ -3,12 +3,15 @@ import { useEffect, useState } from 'react';
 import type { Group } from '../../utils/useReadLivePosition';
 import { LeafIcon } from './useLayerGroups';
 import { latestLeafletMap } from './useWorldMap';
+import { useSettings } from '../../contexts/SettingsContext';
 
 const icon = new LeafIcon({ iconUrl: '/player.webp' });
 function useGroupPositions(group: Group): void {
   const [playerMarkers, setPlayerMarkers] = useState<{
     [username: string]: leaflet.Marker;
   }>({});
+
+  const { showPlayerNames } = useSettings();
 
   useEffect(() => {
     if (!latestLeafletMap) {
@@ -37,6 +40,12 @@ function useGroupPositions(group: Group): void {
           }
 
           marker.setLatLng(position.location);
+
+          if (showPlayerNames && !marker.isTooltipOpen()) {
+            marker.openTooltip();
+          } else if (!showPlayerNames && marker.isTooltipOpen()) {
+            marker.closeTooltip();
+          }
 
           const playerImage = marker.getElement()!;
           let rotation = position.rotation - 180;

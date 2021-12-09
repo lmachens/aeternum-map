@@ -14,6 +14,8 @@ type SettingsContextValue = {
   setMaxTraceLines: (maxTraceLines: number) => void;
   showTraceLines: boolean;
   setShowTraceLines: (showTraceLines: boolean) => void;
+  showPlayerNames: boolean;
+  setShowPlayerNames: (showPlayerName: boolean) => void;
 };
 const SettingsContext = createContext<SettingsContextValue>({
   markerSize: 30,
@@ -26,6 +28,8 @@ const SettingsContext = createContext<SettingsContextValue>({
   setMaxTraceLines: () => undefined,
   showTraceLines: false,
   setShowTraceLines: () => undefined,
+  showPlayerNames: false,
+  setShowPlayerNames: () => undefined,
 });
 
 type SettingsProviderProps = {
@@ -51,6 +55,10 @@ export function SettingsProvider({
     'max-trace-lines',
     250
   );
+  const [showPlayerNames, setShowPlayerNames] = usePersistentState(
+    'show-player-names',
+    false
+  );
 
   return (
     <SettingsContext.Provider
@@ -65,6 +73,8 @@ export function SettingsProvider({
         setMaxTraceLines,
         showTraceLines,
         setShowTraceLines,
+        showPlayerNames,
+        setShowPlayerNames,
       }}
     >
       {children}
