@@ -17,6 +17,21 @@ function useGroupPositions(group: Group): void {
     if (!latestLeafletMap) {
       return;
     }
+
+    const groupValues = Object.values(group);
+    Object.values(playerMarkers).forEach((marker, index) => {
+      marker.unbindTooltip();
+      marker.bindTooltip(groupValues[index].username!, {
+        direction: 'top',
+        permanent: showPlayerNames,
+      });
+    });
+  }, [showPlayerNames]);
+
+  useEffect(() => {
+    if (!latestLeafletMap) {
+      return;
+    }
     const removeablePlayerMarkers = { ...playerMarkers };
 
     const newPlayerMarkers = Object.values(group)
@@ -28,24 +43,23 @@ function useGroupPositions(group: Group): void {
           delete removeablePlayerMarkers[username];
           const existingMarker = playerMarkers[username];
           let marker: leaflet.Marker = playerMarkers[username];
+
           if (!existingMarker) {
             marker = leaflet.marker(player.position!.location, {
               icon,
               zIndexOffset: 8999,
               pmIgnore: true,
             });
-            marker.bindTooltip(username, { direction: 'top' });
+
+            marker.bindTooltip(username, {
+              direction: 'top',
+              permanent: showPlayerNames,
+            });
             marker.addTo(latestLeafletMap!);
             marker.getElement()!.classList.add('leaflet-player-marker');
           }
 
           marker.setLatLng(position.location);
-
-          if (showPlayerNames && !marker.isTooltipOpen()) {
-            marker.openTooltip();
-          } else if (!showPlayerNames && marker.isTooltipOpen()) {
-            marker.closeTooltip();
-          }
 
           const playerImage = marker.getElement()!;
           let rotation = position.rotation - 180;
