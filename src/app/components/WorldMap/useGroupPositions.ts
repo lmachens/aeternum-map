@@ -14,10 +14,6 @@ function useGroupPositions(group: Group): void {
   const { showPlayerNames } = useSettings();
 
   useEffect(() => {
-    if (!latestLeafletMap) {
-      return;
-    }
-
     const groupValues = Object.values(group);
     Object.values(playerMarkers).forEach((marker, index) => {
       marker.unbindTooltip();
