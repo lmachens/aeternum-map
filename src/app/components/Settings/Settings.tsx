@@ -74,6 +74,7 @@ function Settings(): JSX.Element {
           onChange={(event) => setShowPlayerNames(event.target.checked)}
         />
       </label>
+      <label className={styles.label}>
         Always show direction
         <input
           type="checkbox"

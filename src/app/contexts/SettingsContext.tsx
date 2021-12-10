@@ -61,6 +61,8 @@ export function SettingsProvider({
   );
   const [showPlayerNames, setShowPlayerNames] = usePersistentState(
     'show-player-names',
+    false
+  );
   const [alwaysShowDirection, setAlwaysShowDirection] = usePersistentState(
     'always-show-direction',
     false
