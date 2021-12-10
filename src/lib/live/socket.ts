@@ -80,6 +80,10 @@ export function initSocket(server: http.Server) {
       io!.to(token).emit('update', activePlayers[token]);
     });
 
+    client.on('hotkey', (hotkey) => {
+      io!.to(token).emit('hotkey', steamId, hotkey);
+    });
+
     client.on('disconnect', () => {
       if (!isOverwolfApp) {
         client.to(token).emit('disconnected', isOverwolfApp, steamName);

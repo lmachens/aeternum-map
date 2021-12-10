@@ -78,6 +78,15 @@ function useReadLivePosition(): [
     socket.emit('status', updateStatus);
     socket.on('update', updateStatus);
 
+    const handleHotkey = (steamId: string, hotkey: string) => {
+      if (steamId !== account?.steamId) {
+        return;
+      }
+      const event = new CustomEvent(`hotkey-${hotkey}`);
+      window.dispatchEvent(event);
+    };
+    socket.on('hotkey', handleHotkey);
+
     socket.on('connect', () => {
       if (socket.connected) {
         toast.success('Sharing live status 👌');
@@ -87,6 +96,8 @@ function useReadLivePosition(): [
     return () => {
       socket.off('connect');
       socket.off('update');
+      socket.off('hotkey');
+
       socket.close();
       setGroup({});
       toast.info('Stop sharing live status 🛑');

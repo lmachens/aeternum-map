@@ -5,6 +5,7 @@ import { fetchJSON } from '../utils/api';
 import { writeError, writeWarn } from '../utils/logs';
 import { notify } from '../utils/notifications';
 import { usePersistentState } from '../utils/storage';
+import useEventListener from '../utils/useEventListener';
 
 export type User = {
   _id: string;
@@ -99,17 +100,14 @@ export function UserProvider({ children }: UserProviderProps): JSX.Element {
     }
   };
 
-  useEffect(() => {
-    function handleSessionExpired() {
+  useEventListener(
+    'session-expired',
+    () => {
       setAccount(null);
       writeWarn('Session expired');
-    }
-    window.addEventListener('session-expired', handleSessionExpired);
-
-    return () => {
-      window.removeEventListener('session-expired', handleSessionExpired);
-    };
-  }, []);
+    },
+    []
+  );
 
   useEffect(() => {
     if (username) {

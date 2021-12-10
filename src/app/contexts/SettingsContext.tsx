@@ -16,6 +16,8 @@ type SettingsContextValue = {
   setShowTraceLines: (showTraceLines: boolean) => void;
   showPlayerNames: boolean;
   setShowPlayerNames: (showPlayerName: boolean) => void;
+  alwaysShowDirection: boolean;
+  setAlwaysShowDirection: (alwaysShowDirection: boolean) => void;
 };
 const SettingsContext = createContext<SettingsContextValue>({
   markerSize: 30,
@@ -30,6 +32,8 @@ const SettingsContext = createContext<SettingsContextValue>({
   setShowTraceLines: () => undefined,
   showPlayerNames: false,
   setShowPlayerNames: () => undefined,
+  alwaysShowDirection: false,
+  setAlwaysShowDirection: () => undefined,
 });
 
 type SettingsProviderProps = {
@@ -57,6 +61,8 @@ export function SettingsProvider({
   );
   const [showPlayerNames, setShowPlayerNames] = usePersistentState(
     'show-player-names',
+  const [alwaysShowDirection, setAlwaysShowDirection] = usePersistentState(
+    'always-show-direction',
     false
   );
 
@@ -75,6 +81,8 @@ export function SettingsProvider({
         setShowTraceLines,
         showPlayerNames,
         setShowPlayerNames,
+        alwaysShowDirection,
+        setAlwaysShowDirection,
       }}
     >
       {children}

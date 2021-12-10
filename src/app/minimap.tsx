@@ -19,6 +19,8 @@ import { SettingsProvider } from './contexts/SettingsContext';
 import { classNames } from './utils/styles';
 import ResizeBorder from './components/ResizeBorder/ResizeBorder';
 import useReadLivePosition from './utils/useReadLivePosition';
+import useEventListener from './utils/useEventListener';
+import { latestLeafletMap } from './components/WorldMap/useWorldMap';
 
 function Minimap(): JSX.Element {
   const [showSetup, setShowSetup] = useState(false);
@@ -39,6 +41,27 @@ function Minimap(): JSX.Element {
   if (!isOverwolfApp) {
     useReadLivePosition();
   }
+
+  useEventListener(
+    'hotkey-zoom_in_minimap',
+    () => {
+      if (latestLeafletMap) {
+        const zoom = latestLeafletMap.getZoom();
+        latestLeafletMap.setZoom(Math.min(zoom + 1, 6));
+      }
+    },
+    []
+  );
+  useEventListener(
+    'hotkey-zoom_out_minimap',
+    () => {
+      if (latestLeafletMap) {
+        const zoom = latestLeafletMap.getZoom();
+        latestLeafletMap.setZoom(Math.max(zoom - 1, 0));
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     if (!isHovering) {

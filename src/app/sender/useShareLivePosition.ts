@@ -7,6 +7,7 @@ import { usePosition } from '../contexts/PositionContext';
 import { usePersistentState } from '../utils/storage';
 import { toast } from 'react-toastify';
 import type { Group } from '../utils/useReadLivePosition';
+import useShareHotkeys from './useShareHotkeys';
 
 const { VITE_SOCKET_ENDPOINT } = import.meta.env;
 
@@ -28,6 +29,8 @@ function useShareLivePosition(token: string) {
   const user = useUser();
   const { position } = usePosition();
   const { account } = useAccount();
+
+  useShareHotkeys(socket);
 
   useEffect(() => {
     if (!token || !isSharing) {

@@ -4,7 +4,7 @@
   "meta": {
     "name": "Aeternum Map",
     "author": "Leon Machens",
-    "version": "2.0.6",
+    "version": "2.1.0",
     "minimum-overwolf-version": "0.169.0",
     "description": "New World Interactive Map",
     "dock_button_title": "Aeternum Map",
@@ -137,6 +137,21 @@
         "title": "Zoom Out Minimap",
         "action-type": "custom",
         "default": "F8"
+      },
+      "zoom_in_map": {
+        "title": "Zoom In Map (Website)",
+        "action-type": "custom",
+        "default": "F9"
+      },
+      "zoom_out_map": {
+        "title": "Zoom Out Map (Website)",
+        "action-type": "custom",
+        "default": "F10"
+      },
+      "show_hide_direction": {
+        "title": "Show/Hide Direction (Website)",
+        "action-type": "custom",
+        "default": "F11"
       }
     },
     "protocol_override_domains": {

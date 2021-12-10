@@ -5,6 +5,7 @@ import { useSettings } from '../../contexts/SettingsContext';
 import { isOverwolfApp } from '../../utils/overwolf';
 import type CanvasMarker from './CanvasMarker';
 import { updateRotation } from './rotation';
+import useDirectionLine from './useDirectionLine';
 import { LeafIcon } from './useLayerGroups';
 
 const divElement = leaflet.DomUtil.create('div', 'leaflet-player-position');
@@ -40,6 +41,8 @@ function usePlayerPosition({
   const traceDots = useMemo<leaflet.Circle[]>(() => [], []);
 
   const { showTraceLines, maxTraceLines } = useSettings();
+
+  useDirectionLine(position);
 
   useEffect(() => {
     if (!leafletMap) {

@@ -15,6 +15,8 @@ function Settings(): JSX.Element {
     setShowTraceLines,
     showPlayerNames,
     setShowPlayerNames,
+    alwaysShowDirection,
+    setAlwaysShowDirection,
   } = useSettings();
 
   return (
@@ -72,6 +74,15 @@ function Settings(): JSX.Element {
           onChange={(event) => setShowPlayerNames(event.target.checked)}
         />
       </label>
+        Always show direction
+        <input
+          type="checkbox"
+          checked={alwaysShowDirection}
+          onChange={(event) => setAlwaysShowDirection(event.target.checked)}
+        />
+      </label>
+      <h3>Hotkeys</h3>
+      <em>Hotkeys are configured in the Overwolf app</em>
     </div>
   );
 }
