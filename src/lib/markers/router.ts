@@ -17,21 +17,29 @@ const markersRouter = Router();
 
 const MAX_NAME_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 200;
-markersRouter.get('/', async (_req, res, next) => {
+
+markersRouter.get('/', async (req, res, next) => {
   try {
-    const markers = await getMarkersCollection()
-      .find(
-        {},
-        {
-          projection: {
-            description: 0,
-            userId: 0,
-            username: 0,
-            screenshotFilename: 0,
-            createdAt: 0,
-          },
+    const account = req.account;
+    const query: Filter<MarkerDTO> = account
+      ? {
+          $or: [{ isPrivate: { $ne: true } }, { userId: account.steamId }],
         }
-      )
+      : {
+          isPrivate: { $ne: true },
+        };
+
+    const markers = await getMarkersCollection()
+      .find(query, {
+        projection: {
+          description: 0,
+          userId: 0,
+          username: 0,
+          screenshotFilename: 0,
+          createdAt: 0,
+          isPrivate: 0,
+        },
+      })
       .toArray();
     res.status(200).json(markers);
   } catch (error) {
@@ -41,14 +49,21 @@ markersRouter.get('/', async (_req, res, next) => {
 
 markersRouter.get('/:markerId', async (req, res, next) => {
   try {
+    const account = req.account;
     const { markerId } = req.params;
     if (!ObjectId.isValid(markerId)) {
       res.status(400).send('Invalid payload');
       return;
     }
-    const marker = await getMarkersCollection().findOne({
-      _id: new ObjectId(markerId),
-    });
+    const query: Filter<MarkerDTO> = account
+      ? {
+          $or: [{ isPrivate: { $ne: true } }, { userId: account.steamId }],
+        }
+      : {
+          isPrivate: { $ne: true },
+        };
+    query._id = new ObjectId(markerId);
+    const marker = await getMarkersCollection().findOne(query);
     const comments = await getCommentsCollection()
       .find({ markerId: new ObjectId(markerId) })
       .sort({ createdAt: -1 })
@@ -108,7 +123,8 @@ markersRouter.delete(
 
       res.status(200).json({});
       postToDiscord(
-        `📌💀 Marker from ${marker.username} deleted by ${account.name}`
+        `📌💀 Marker from ${marker.username} deleted by ${account.name}`,
+        marker.isPrivate
       );
     } catch (error) {
       next(error);
@@ -140,10 +156,33 @@ markersRouter.patch(
         ];
       }
 
+      const mapFilter = mapFilters.find(
+        (filter) => filter.type === marker.type
+      );
+      if (!mapFilter) {
+        res.status(400).send('Invalid filter type');
+        return;
+      }
+
+      const unset: {
+        [K in keyof MarkerDTO]?: 1;
+      } = {};
+      if (mapFilter.category !== 'chests') {
+        unset.chestType = 1;
+      }
+      if (!mapFilter.hasLevel) {
+        unset.level = 1;
+      }
+      if (!mapFilter.hasName) {
+        unset.name = 1;
+      }
+
+      marker.isPrivate = mapFilter.category === 'private';
       const result = await getMarkersCollection().findOneAndUpdate(
         query,
         {
           $set: marker,
+          $unset: unset,
         },
         { returnDocument: 'after' }
       );
@@ -156,7 +195,8 @@ markersRouter.patch(
         ? `${marker.type} ${marker.name}`
         : marker.type;
       await postToDiscord(
-        `📌 ${nameType} was updated by ${account.name} at [${marker.position}]`
+        `📌 ${nameType} was updated by ${account.name} at [${marker.position}]`,
+        !marker.isPrivate
       );
     } catch (error) {
       next(error);
@@ -198,7 +238,7 @@ markersRouter.post('/', ensureAuthenticated, async (req, res, next) => {
       res.status(400).send('Invalid filter type');
       return;
     }
-
+    marker.isPrivate = mapFilter.category === 'private';
     const inserted = await getMarkersCollection().insertOne(marker);
     if (!inserted.acknowledged) {
       res.status(500).send('Error inserting marker');
@@ -209,7 +249,8 @@ markersRouter.post('/', ensureAuthenticated, async (req, res, next) => {
       ? `${mapFilter.title} ${marker.name}`
       : mapFilter.title;
     await postToDiscord(
-      `📌 ${nameType} was added by ${account.name} at [${marker.position}]`
+      `📌 ${nameType} was added by ${account.name} at [${marker.position}]`,
+      !marker.isPrivate
     );
   } catch (error) {
     console.error(`Error creating marker ${JSON.stringify(req.body)}`);
@@ -266,7 +307,8 @@ markersRouter.post(
       res.status(200).json(comment);
       const position = marker.position ? marker.position.join(', ') : 'unknown';
       await postToDiscord(
-        `✍ ${account.name} added a comment for ${marker.type} at [${position}]:\n${comment.message}`
+        `✍ ${account.name} added a comment for ${marker.type} at [${position}]:\n${comment.message}`,
+        !marker.isPrivate
       );
     } catch (error) {
       next(error);

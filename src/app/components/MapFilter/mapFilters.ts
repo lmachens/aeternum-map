@@ -12,6 +12,34 @@ export type FilterItem = {
 
 export const mapFilters: FilterItem[] = [
   {
+    category: 'private',
+    type: 'generic',
+    title: i18n('Generic'),
+    iconUrl: '/pois/private/generic.webp',
+    hasName: true,
+  },
+  {
+    category: 'private',
+    type: 'Main Quest',
+    title: i18n('Main Quest'),
+    iconUrl: '/pois/private/mainQuest.webp',
+    hasName: true,
+  },
+  {
+    category: 'private',
+    type: 'Side Quest',
+    title: i18n('Side Quest'),
+    iconUrl: '/pois/private/sideQuest.webp',
+    hasName: true,
+  },
+  {
+    category: 'private',
+    type: 'faction-quest',
+    title: i18n('Faction Quest'),
+    iconUrl: '/pois/private/factionQuest.webp',
+    hasName: true,
+  },
+  {
     category: 'specialEvents',
     type: 'gleamite',
     title: i18n('Gleamite'),
@@ -841,17 +869,15 @@ export type MapFiltersCategory = {
 
 export const mapFiltersCategories: MapFiltersCategory[] = [
   {
+    value: 'private',
+    title: i18n('Private (only visible to you)'),
+    filters: mapFilters.filter((mapFilter) => mapFilter.category === 'private'),
+  },
+  {
     value: 'specialEvents',
     title: i18n('Special Events'),
     filters: mapFilters.filter(
       (mapFilter) => mapFilter.category === 'specialEvents'
-    ),
-  },
-  {
-    value: 'locations',
-    title: i18n('Locations'),
-    filters: mapFilters.filter(
-      (mapFilter) => mapFilter.category === 'locations'
     ),
   },
   {
@@ -937,6 +963,13 @@ export const mapFiltersCategories: MapFiltersCategory[] = [
     title: i18n('Services'),
     filters: mapFilters.filter((mapFilter) => mapFilter.category === 'service'),
     borderColor: 'rgba(112, 128, 144, 0.7)',
+  },
+  {
+    value: 'locations',
+    title: i18n('Locations'),
+    filters: mapFilters.filter(
+      (mapFilter) => mapFilter.category === 'locations'
+    ),
   },
   {
     value: 'other',
