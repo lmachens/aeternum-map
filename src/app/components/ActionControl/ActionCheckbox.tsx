@@ -5,7 +5,14 @@ import styles from './ActionControl.module.css';
 
 function ActionCheckbox({ className, ...props }: CheckboxProps): JSX.Element {
   return (
-    <Checkbox className={classNames(styles.action, className)} {...props} />
+    <Checkbox
+      className={classNames(
+        styles.action,
+        props.checked && styles.active,
+        className
+      )}
+      {...props}
+    />
   );
 }
 

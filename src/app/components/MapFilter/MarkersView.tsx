@@ -36,7 +36,6 @@ function MarkersView({ onAdd }: MarkersViewProps): JSX.Element {
     setFilters(uniqueFilters);
     setPreset(null);
   }
-
   return (
     <section className={styles.container}>
       <div className={styles.actions}>
@@ -44,10 +43,14 @@ function MarkersView({ onAdd }: MarkersViewProps): JSX.Element {
           {account ? 'Add resource' : 'Login to add resource'}
         </ActionButton>
         <ActionCheckbox
-          className={styles.action}
           onChange={(checked) => handleToggle(['hidden'], checked)}
           checked={filters.includes('hidden')}
-          title="Toggle Hidden"
+          title="Show Hidden"
+        />
+        <ActionCheckbox
+          onChange={(checked) => handleToggle(['only-with-comment'], checked)}
+          checked={filters.includes('only-with-comment')}
+          title="Only with comment"
         />
       </div>
       <div className={styles.actions}>

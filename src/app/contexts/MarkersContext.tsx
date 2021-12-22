@@ -140,17 +140,23 @@ export function MarkersProvider({
   }, [allMarkerRoutes]);
 
   const hiddenMarkerIds = user?.hiddenMarkerIds || [];
-  const visibleMarkers = useMemo(
-    () =>
-      markers.filter(
-        (marker) =>
-          filters.some((filter) => filter === marker.type) &&
-          !temporaryHiddenMarkerIDs.includes(marker._id) &&
-          (filters.includes('hidden') || !hiddenMarkerIds.includes(marker._id))
-      ),
-
-    [filters, markers, hiddenMarkerIds, temporaryHiddenMarkerIDs]
-  );
+  const visibleMarkers = useMemo(() => {
+    return markers.filter((marker) => {
+      if (!filters.some((filter) => filter === marker.type)) {
+        return false;
+      }
+      if (temporaryHiddenMarkerIDs.includes(marker._id)) {
+        return false;
+      }
+      if (filters.includes('only-with-comment') && !marker.comments) {
+        return false;
+      }
+      if (!filters.includes('hidden') && hiddenMarkerIds.includes(marker._id)) {
+        return false;
+      }
+      return true;
+    });
+  }, [filters, markers, hiddenMarkerIds, temporaryHiddenMarkerIDs]);
 
   const toggleMarkerRoute = (markerRoute: MarkerRouteItem) => {
     const markerRoutesClone = [...markerRoutes];
