@@ -18,12 +18,12 @@ const CoordinatesControl = leaflet.Control.extend({
 });
 export const coordinates = new CoordinatesControl({ position: 'bottomright' });
 
-function createTraceDot(latLng: [number, number]) {
+function createTraceDot(latLng: [number, number], color: string) {
   return leaflet.circle(latLng, {
     radius: 0,
     interactive: false,
     pmIgnore: true,
-    color: '#F78166',
+    color,
   });
 }
 
@@ -42,7 +42,7 @@ function usePlayerPosition({
   const traceDotsGroup = useMemo(() => new leaflet.LayerGroup(), []);
   const traceDots = useMemo<leaflet.Circle[]>(() => [], []);
 
-  const { showTraceLines, maxTraceLines } = useSettings();
+  const { showTraceLines, maxTraceLines, traceLineColor } = useSettings();
 
   useDirectionLine(position);
   useAdaptiveZoom(position);
@@ -163,7 +163,7 @@ function usePlayerPosition({
     if (!leafletMap || isOverwolfApp) {
       return;
     }
-    const traceDot = createTraceDot(position.location);
+    const traceDot = createTraceDot(position.location, traceLineColor);
     traceDots.push(traceDot);
     traceDot.addTo(traceDotsGroup);
 

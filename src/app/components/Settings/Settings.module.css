@@ -11,3 +11,7 @@
   grid-template-columns: 50% 50%;
   align-items: center;
 }
+
+.label input {
+  padding: 0;
+}

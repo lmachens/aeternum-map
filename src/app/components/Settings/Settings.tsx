@@ -19,6 +19,8 @@ function Settings(): JSX.Element {
     setAlwaysShowDirection,
     adaptiveZoom,
     setAdaptiveZoom,
+    traceLineColor,
+    setTraceLineColor,
   } = useSettings();
 
   return (
@@ -66,6 +68,14 @@ function Settings(): JSX.Element {
           type="number"
           value={maxTraceLines}
           onChange={(event) => setMaxTraceLines(+event.target.value)}
+        />
+      </label>
+      <label className={styles.label}>
+        Trace line color
+        <input
+          type="color"
+          value={traceLineColor}
+          onChange={(event) => setTraceLineColor(event.target.value)}
         />
       </label>
       <label className={styles.label}>

@@ -20,6 +20,8 @@ type SettingsContextValue = {
   setAlwaysShowDirection: (alwaysShowDirection: boolean) => void;
   adaptiveZoom: boolean;
   setAdaptiveZoom: (adaptiveZoom: boolean) => void;
+  traceLineColor: string;
+  setTraceLineColor: (traceLineColor: string) => void;
 };
 const SettingsContext = createContext<SettingsContextValue>({
   markerSize: 30,
@@ -38,6 +40,8 @@ const SettingsContext = createContext<SettingsContextValue>({
   setAlwaysShowDirection: () => undefined,
   adaptiveZoom: false,
   setAdaptiveZoom: () => undefined,
+  traceLineColor: '#F78166',
+  setTraceLineColor: () => undefined,
 });
 
 type SettingsProviderProps = {
@@ -75,6 +79,10 @@ export function SettingsProvider({
     'adaptive-zoom',
     true
   );
+  const [traceLineColor, setTraceLineColor] = usePersistentState(
+    'trace-line-color',
+    '#F78166'
+  );
 
   return (
     <SettingsContext.Provider
@@ -95,6 +103,8 @@ export function SettingsProvider({
         setAlwaysShowDirection,
         adaptiveZoom,
         setAdaptiveZoom,
+        traceLineColor,
+        setTraceLineColor,
       }}
     >
       {children}
