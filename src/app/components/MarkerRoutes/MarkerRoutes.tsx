@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFilters } from '../../contexts/FiltersContext';
 import { useMarkers } from '../../contexts/MarkersContext';
 import type { AccountDTO } from '../../contexts/UserContext';
@@ -8,6 +8,7 @@ import { notify } from '../../utils/notifications';
 import { escapeRegExp } from '../../utils/regExp';
 import { usePersistentState } from '../../utils/storage';
 import ActionButton from '../ActionControl/ActionButton';
+import Button from '../Button/Button';
 import { mapFilters } from '../MapFilter/mapFilters';
 import SelectMap from '../MapFilter/SelectMap';
 import SearchInput from '../SearchInput/SearchInput';
@@ -118,10 +119,15 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
   );
   const [search, setSearch] = usePersistentState('searchRoutes', '');
   const { filters, setFilters } = useFilters();
+  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
     refreshMarkerRoutes();
   }, []);
+
+  useEffect(() => {
+    setLimit(10);
+  }, [sortBy, filter, search]);
 
   async function handleRemove(markerRouteId: string): Promise<void> {
     if (!account) {
@@ -176,7 +182,6 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
         .sort(handleSort(sortBy, filters)),
     [sortBy, visibleMarkerRoutes, filters, filter, search]
   );
-
   function handleEdit(markerRoute: MarkerRouteItem) {
     if (
       markerRoutes.some(
@@ -240,7 +245,7 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
       </div>
       <div className={styles.items}>
         {sortedMarkerRoutes.length === 0 && 'No routes available'}
-        {sortedMarkerRoutes.map((markerRoute) => (
+        {sortedMarkerRoutes.slice(0, limit).map((markerRoute) => (
           <MarkerRoute
             key={markerRoute._id}
             isOwner={markerRoute.userId === account?.steamId}
@@ -262,6 +267,14 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
             onEdit={() => handleEdit(markerRoute)}
           />
         ))}
+        {sortedMarkerRoutes.length > limit && (
+          <Button
+            className={styles.loadMore}
+            onClick={() => setLimit((limit) => limit + 10)}
+          >
+            Load more
+          </Button>
+        )}
       </div>
     </section>
   );

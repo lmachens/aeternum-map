@@ -39,10 +39,13 @@ export function PositionProvider({
   const [map, setMap] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const newWorldIsRunning = useIsNewWorldRunning();
-  window.setMap = setMap;
+
   const location = useMemo(
     () =>
-      map === DEFAULT_MAP_NAME && position && findLocation(position.location),
+      (map === DEFAULT_MAP_NAME &&
+        position &&
+        findLocation(position.location)) ||
+      null,
     [position, map]
   );
   const region = useMemo(() => {

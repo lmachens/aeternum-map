@@ -18,7 +18,6 @@ import { latestLeafletMap } from '../WorldMap/useWorldMap';
 import MapSearch from '../MapSearch/MapSearch';
 import useDebounce from '../../utils/useDebounce';
 import BroadcastIcon from '../icons/BroadcastIcon';
-import useReadLivePosition from '../../utils/useReadLivePosition';
 import ShareLiveStatus from '../ShareLiveStatus/ShareLiveStatus';
 import Footer from '../Footer/Footer';
 import { usePlayer } from '../../contexts/PlayerContext';
@@ -39,9 +38,7 @@ function MapFilter({
     true
   );
   const [view, setView] = usePersistentState<View>('sidebar-view', 'markers');
-  const { following, toggleFollowing } = usePlayer();
-
-  const [isLive, setIsLive] = useReadLivePosition();
+  const { following, toggleFollowing, isSyncing, setIsSyncing } = usePlayer();
 
   useDebounce(
     isOpen,
@@ -53,7 +50,6 @@ function MapFilter({
     setIsOpen(true);
     setView(view);
   }
-
   return (
     <aside className={classNames(styles.container, isOpen && styles.open)}>
       <div className={styles.content}>
@@ -105,26 +101,26 @@ function MapFilter({
           data-tooltip="Share live status"
           data-tooltip-position="right"
           onClick={() => {
-            if (!isLive) {
+            if (!isSyncing) {
               addModal({
                 title: 'Share Live Status',
                 children: (
                   <ShareLiveStatus
                     onActivate={() => {
-                      setIsLive(true);
+                      setIsSyncing(true);
                       closeLatestModal();
                     }}
                   />
                 ),
               });
             } else {
-              setIsLive(false);
+              setIsSyncing(false);
             }
           }}
           className={classNames(
             styles.nav__button,
             styles.nav__border,
-            isLive && styles.nav__active
+            isSyncing && styles.nav__active
           )}
         >
           <BroadcastIcon />
@@ -132,7 +128,7 @@ function MapFilter({
         <button
           data-tooltip="Follow position"
           data-tooltip-position="right"
-          disabled={!isLive}
+          disabled={!isSyncing}
           onClick={() => {
             toggleFollowing();
           }}

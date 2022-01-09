@@ -25,7 +25,7 @@ export type Group = {
 let latestPlayer: Player | null = null;
 let latestGroup: Group | null = null;
 
-function useReadLivePosition(): [boolean, (value: boolean) => void] {
+function useReadLivePosition() {
   const { setPlayer, isSyncing, setIsSyncing } = usePlayer();
   const [group, setGroup] = useState<Group>({});
   const { account } = useAccount();
@@ -180,8 +180,6 @@ function useReadLivePosition(): [boolean, (value: boolean) => void] {
     isSyncing,
     account?.steamId,
   ]);
-
-  return [isSyncing, setIsSyncing];
 }
 
 export default useReadLivePosition;

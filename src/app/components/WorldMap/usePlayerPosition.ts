@@ -70,6 +70,7 @@ function usePlayerPosition({
 
   useEffect(() => {
     if (playerMap) {
+      traceDotsGroup.clearLayers();
       setMap(playerMap);
     }
   }, [playerMap]);
@@ -108,7 +109,7 @@ function usePlayerPosition({
   }, [leafletMap, rotate]);
 
   useEffect(() => {
-    if (!marker || !leafletMap || !playerPosition) {
+    if (!marker || !leafletMap || !playerPosition || !isOnSameWorld) {
       return;
     }
     const playerImage = marker.getElement();
@@ -185,7 +186,7 @@ function usePlayerPosition({
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [marker, leafletMap, playerPosition, isFollowing, rotate]);
+  }, [marker, leafletMap, playerPosition, isFollowing, rotate, isOnSameWorld]);
 
   useEffect(() => {
     if (!leafletMap || isOverwolfApp || !playerPosition) {

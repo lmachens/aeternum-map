@@ -6,9 +6,9 @@ import MarkerDetails from '../MarkerDetails/MarkerDetails';
 import usePlayerPosition from './usePlayerPosition';
 import { classNames } from '../../utils/styles';
 import type { CSSProperties } from 'react';
-import { useEffect, useState } from 'react';
 import type { MarkerBasic } from '../../contexts/MarkersContext';
 import { isOverwolfApp } from '../../utils/overwolf';
+import useReadLivePosition from '../../utils/useReadLivePosition';
 
 type WorldMapProps = {
   isMinimap?: boolean;
@@ -36,6 +36,8 @@ function WorldMap({
     initialZoom,
   });
   if (!isOverwolfApp) {
+    useReadLivePosition();
+
     useLayerGroups({
       leafletMap,
       onMarkerClick: (marker) => {

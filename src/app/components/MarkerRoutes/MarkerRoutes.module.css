@@ -20,3 +20,8 @@
 .actions > * {
   width: 100%;
 }
+
+.loadMore {
+  width: 100%;
+  margin: 1rem 0;
+}

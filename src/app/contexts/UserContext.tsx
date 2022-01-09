@@ -121,7 +121,6 @@ export function UserProvider({ children }: UserProviderProps): JSX.Element {
       refresh();
     }
   }, [username]);
-
   return (
     <UserContext.Provider
       value={{

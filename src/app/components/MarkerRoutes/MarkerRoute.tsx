@@ -33,7 +33,6 @@ function MarkerRoute({
 }: MarkerRouteProps): JSX.Element {
   return (
     <article
-      key={markerRoute.name}
       className={classNames(styles.container, selected && styles.selected)}
       onClick={onClick}
     >

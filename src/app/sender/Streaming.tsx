@@ -1,4 +1,3 @@
-import Button from '../components/Button/Button';
 import { usePersistentState } from '../utils/storage';
 import { patchLiveShareToken } from '../components/ShareLiveStatus/api';
 import { copyTextToClipboard } from '../utils/clipboard';
@@ -141,7 +140,7 @@ function Streaming(): JSX.Element {
               onChange={(event) => setToken(event.target.value)}
             />
           </label>
-          <Button
+          <button
             className={styles.action}
             type="button"
             onClick={() => setToken(uuid())}
@@ -149,8 +148,8 @@ function Streaming(): JSX.Element {
             disabled={isSharing}
           >
             <RefreshIcon />
-          </Button>
-          <Button
+          </button>
+          <button
             className={styles.action}
             type="button"
             disabled={!token || !serverUrl}
@@ -160,7 +159,7 @@ function Streaming(): JSX.Element {
             title="Copy Token"
           >
             <CopyIcon />
-          </Button>
+          </button>
         </div>
         <div className={styles.status}>
           <aside>
@@ -177,7 +176,7 @@ function Streaming(): JSX.Element {
               )}
             </ul>
           </aside>
-          <Button
+          <button
             disabled={!token}
             type="submit"
             className={classNames(
@@ -190,7 +189,7 @@ function Streaming(): JSX.Element {
             {isSharing && !isConnected && 'Connecting'}
             {isSharing && isConnected && 'Sharing'}
             {!isSharing && 'Share'}
-          </Button>
+          </button>
 
           <aside>
             <h5>Receivers</h5>
