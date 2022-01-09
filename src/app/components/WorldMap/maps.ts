@@ -34,4 +34,43 @@ export const mapDetails: Map[] = [
       [2000, 1200],
     ],
   },
+  {
+    name: 'NW_Dungeon_Everfall_00',
+    title: 'Starstone Barrows',
+    folder: 'nw_dungeon_everfall_00',
+    maxZoom: 6,
+    minZoom: 3,
+    maxBounds: [
+      [200, 100],
+      [900, 1200],
+    ],
+  },
+  {
+    name: 'NW_Dungeon_Reekwater_00',
+    title: 'Lazarus Instrumentality',
+    folder: 'nw_dungeon_reekwater_00',
+    maxZoom: 6,
+    minZoom: 3,
+    maxBounds: [
+      [300, 200],
+      [1100, 1100],
+    ],
+  },
+  {
+    name: 'nw_Dungeon_Restlessshores_01',
+    title: 'The Depths',
+    folder: 'nw_dungeon_restlessshores_01',
+    maxZoom: 6,
+    minZoom: 3,
+    maxBounds: [
+      [300, 200],
+      [1100, 1100],
+    ],
+  },
 ];
+
+export const findMapDetails = (map: string) => {
+  return mapDetails.find(
+    (mapDetail) => mapDetail.name.toLowerCase() === map.toLowerCase()
+  );
+};

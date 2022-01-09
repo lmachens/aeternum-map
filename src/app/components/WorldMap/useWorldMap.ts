@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { TileLayer } from 'leaflet';
 import leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'tilelayer-canvas';
@@ -6,7 +7,7 @@ import { coordinates as playerCoordinates } from './usePlayerPosition';
 import { getJSONItem, setJSONItem } from '../../utils/storage';
 import { useSettings } from '../../contexts/SettingsContext';
 import useRegionBorders from './useRegionBorders';
-import { DEFAULT_MAP_NAME, mapDetails } from './maps';
+import { DEFAULT_MAP_NAME, findMapDetails } from './maps';
 import { useFilters } from '../../contexts/FiltersContext';
 
 const { VITE_API_ENDPOINT = '' } = import.meta.env;
@@ -25,18 +26,20 @@ const worldCRS = leaflet.extend({}, leaflet.CRS.Simple, {
   transformation: new leaflet.Transformation(1 / 16, 0, -1 / 16, 0),
 });
 
-const WorldTiles = (map: string) =>
+const WorldTiles = (map: string): new () => TileLayer =>
   // @ts-ignore
   leaflet.TileLayer.Canvas.extend({
+    options: {
+      errorTileUrl: `${VITE_API_ENDPOINT}/assets/map/empty.webp`,
+    },
     getTileUrl(coords: { x: number; y: number; z: number }) {
       const zoom = 8 - coords.z - 1;
       const multiplicators = [1, 2, 4, 8, 16, 32, 64];
       const x = coords.x * multiplicators[zoom - 1];
       const y = (-coords.y - 1) * multiplicators[zoom - 1];
       if (x < 0 || y < 0 || y >= 64 || x >= 64) {
-        return `${VITE_API_ENDPOINT}/assets/${map}/empty.webp`;
+        return `${VITE_API_ENDPOINT}/assets/map/empty.webp`;
       }
-      // return `/map/map_l1_y000_x024.webp`;
       return `${VITE_API_ENDPOINT}/assets/${map}/map_l${zoom}_y${toThreeDigits(
         y
       )}_x${toThreeDigits(x)}.webp`;
@@ -70,7 +73,7 @@ function useWorldMap({ hideControls, initialZoom }: UseWorldMapProps): {
 
   useEffect(() => {
     const mapElement = elementRef.current;
-    const mapDetail = mapDetails.find((mapDetail) => mapDetail.name === map);
+    const mapDetail = findMapDetails(map);
     if (!mapElement || !mapDetail) {
       return;
     }
@@ -101,7 +104,9 @@ function useWorldMap({ hideControls, initialZoom }: UseWorldMapProps): {
       leafletMap.setMinZoom(mapDetail.minZoom);
       leafletMap.setMaxBounds(latLngBounds);
       setView(leafletMap);
-      return;
+      return () => {
+        worldTiles.remove();
+      };
     }
 
     const leafletMap = leaflet.map(mapElement, {

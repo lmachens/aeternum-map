@@ -121,8 +121,12 @@ async function runServer() {
       express.static(path.join(__dirname, 'assets'), {
         immutable: true,
         maxAge: '1d',
+        fallthrough: true,
       })
     );
+    app.use('/assets/*', (_req, res) => {
+      res.sendFile(path.join(__dirname, 'assets/map/empty.webp'));
+    });
 
     // Serve webversion (only on production)
     if (NODE_ENV === 'production') {

@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useEffect } from 'react';
 import { createContext, useContext } from 'react';
 import { findRegion, findLocation } from '../components/WorldMap/areas';
-import { DEFAULT_MAP_NAME, mapDetails } from '../components/WorldMap/maps';
+import { DEFAULT_MAP_NAME, findMapDetails } from '../components/WorldMap/maps';
 import { getGameInfo, useIsNewWorldRunning } from '../utils/games';
 import { writeError } from '../utils/logs';
 
@@ -50,7 +50,7 @@ export function PositionProvider({
   );
   const region = useMemo(() => {
     if (map && map !== DEFAULT_MAP_NAME) {
-      const world = mapDetails.find((mapDetail) => mapDetail.name === map);
+      const world = findMapDetails(map);
       return world?.title || 'Unknown';
     }
     return position && findRegion(position.location);

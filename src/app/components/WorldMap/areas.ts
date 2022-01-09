@@ -1,6 +1,6 @@
 import locations from './locations.json';
 import regions from './regions.json';
-import { DEFAULT_MAP_NAME, mapDetails } from './maps';
+import { DEFAULT_MAP_NAME, findMapDetails } from './maps';
 
 export type Area = {
   name: string;
@@ -56,7 +56,7 @@ export const findRegions = (
   map: string
 ): string[] => {
   if (map && map !== DEFAULT_MAP_NAME) {
-    const mapDetail = mapDetails.find((mapDetail) => mapDetail.name === map);
+    const mapDetail = findMapDetails(map);
     return [mapDetail?.title || 'Unknown'];
   }
   const regions = positions.map(
