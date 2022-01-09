@@ -14,7 +14,7 @@ import { ensureAuthenticated } from '../auth/middlewares';
 import etag from 'etag';
 import {
   DEFAULT_MAP_NAME,
-  mapDetails,
+  findMapDetails,
 } from '../../app/components/WorldMap/maps';
 
 const markersRouter = Router();
@@ -376,7 +376,7 @@ async function bodyToMarker(
   if (
     typeof map === 'string' &&
     map !== DEFAULT_MAP_NAME &&
-    mapDetails.some((mapDetail) => mapDetail.name === map)
+    findMapDetails(map)
   ) {
     marker.map = map;
   }

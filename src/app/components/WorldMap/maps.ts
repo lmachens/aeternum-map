@@ -24,7 +24,7 @@ export const mapDetails: Map[] = [
     ],
   },
   {
-    name: 'nw_dungeon_Windsward_00',
+    name: 'NW_Dungeon_Windsward_00',
     title: 'Amrine Excavation',
     folder: 'nw_dungeon_windsward_00',
     maxZoom: 6,

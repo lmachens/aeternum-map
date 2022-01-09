@@ -8,7 +8,7 @@ import { ensureAuthenticated } from '../auth/middlewares';
 import { findRegions } from '../../app/components/WorldMap/areas';
 import {
   DEFAULT_MAP_NAME,
-  mapDetails,
+  findMapDetails,
 } from '../../app/components/WorldMap/maps';
 
 const markerRoutesRouter = Router();
@@ -51,7 +51,7 @@ markerRoutesRouter.post('/', ensureAuthenticated, async (req, res, next) => {
     if (
       typeof map === 'string' &&
       map !== DEFAULT_MAP_NAME &&
-      mapDetails.some((mapDetail) => mapDetail.name === map)
+      findMapDetails(map)
     ) {
       markerRoute.map = map;
     }
@@ -209,7 +209,7 @@ markerRoutesRouter.patch(
       if (
         typeof map === 'string' &&
         map !== DEFAULT_MAP_NAME &&
-        mapDetails.some((mapDetail) => mapDetail.name === map)
+        findMapDetails(map)
       ) {
         markerRoute.map = map;
       }
