@@ -11,7 +11,7 @@ type MarkerTypesProps = {
 };
 
 function MarkerTypes({ markersByType }: MarkerTypesProps): JSX.Element {
-  const [filters] = useFilters();
+  const { filters } = useFilters();
 
   const markerMapFilters: FilterItem[] = [];
   Object.keys(markersByType).forEach((markerType) => {

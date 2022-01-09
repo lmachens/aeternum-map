@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect } from 'react';
 import { getMarkerRoutes } from '../components/MarkerRoutes/api';
 import type { MarkerRouteItem } from '../components/MarkerRoutes/MarkerRoutes';
 import { latestLeafletMap } from '../components/WorldMap/useWorldMap';
+import { DEFAULT_MAP_NAME } from '../components/WorldMap/maps';
 import { fetchJSON } from '../utils/api';
 import { writeError } from '../utils/logs';
 import { notify } from '../utils/notifications';
@@ -15,6 +16,7 @@ import { useUser } from './UserContext';
 
 export type MarkerBasic = {
   type: string;
+  map?: string;
   position: [number, number, number];
   name?: string;
   chestType?: string;
@@ -40,7 +42,7 @@ type MarkersContextProps = {
   refresh: () => void;
   mode: Mode;
   setMode: React.Dispatch<React.SetStateAction<Mode>>;
-  allMarkerRoutes: MarkerRouteItem[];
+  visibleMarkerRoutes: MarkerRouteItem[];
   refreshMarkerRoutes: () => void;
 };
 const MarkersContext = createContext<MarkersContextProps>({
@@ -54,7 +56,7 @@ const MarkersContext = createContext<MarkersContextProps>({
   refresh: () => undefined,
   mode: null,
   setMode: () => undefined,
-  allMarkerRoutes: [],
+  visibleMarkerRoutes: [],
   refreshMarkerRoutes: () => undefined,
 });
 
@@ -86,7 +88,7 @@ export function MarkersProvider({
     string[]
   >([]);
 
-  const [filters, setFilters] = useFilters();
+  const { filters, setFilters, map } = useFilters();
   const user = useUser();
 
   const refresh = () => {
@@ -142,6 +144,12 @@ export function MarkersProvider({
   const hiddenMarkerIds = user?.hiddenMarkerIds || [];
   const visibleMarkers = useMemo(() => {
     return markers.filter((marker) => {
+      if (map !== DEFAULT_MAP_NAME && marker.map !== map) {
+        return false;
+      } else if (map === DEFAULT_MAP_NAME && marker.map) {
+        return false;
+      }
+
       if (!filters.some((filter) => filter === marker.type)) {
         return false;
       }
@@ -156,7 +164,7 @@ export function MarkersProvider({
       }
       return true;
     });
-  }, [filters, markers, hiddenMarkerIds, temporaryHiddenMarkerIDs]);
+  }, [filters, markers, hiddenMarkerIds, temporaryHiddenMarkerIDs, map]);
 
   const toggleMarkerRoute = (markerRoute: MarkerRouteItem) => {
     const markerRoutesClone = [...markerRoutes];
@@ -184,6 +192,19 @@ export function MarkersProvider({
     setMarkerRoutes([]);
   }
 
+  const visibleMarkerRoutes = useMemo(
+    () =>
+      allMarkerRoutes.filter((markerRoute) => {
+        if (map !== DEFAULT_MAP_NAME && markerRoute.map !== map) {
+          return false;
+        } else if (map === DEFAULT_MAP_NAME && markerRoute.map) {
+          return false;
+        }
+        return true;
+      }),
+    [allMarkerRoutes, map]
+  );
+
   return (
     <MarkersContext.Provider
       value={{
@@ -197,7 +218,7 @@ export function MarkersProvider({
         toggleMarkerRoute,
         mode,
         setMode,
-        allMarkerRoutes,
+        visibleMarkerRoutes,
         refreshMarkerRoutes,
       }}
     >

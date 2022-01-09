@@ -4,6 +4,7 @@ import { latestLeafletMap } from './useWorldMap';
 import { useSettings } from '../../contexts/SettingsContext';
 import PositionMarker from './PositionMarker';
 import { LeafIcon } from './useLayerGroups';
+import { useFilters } from '../../contexts/FiltersContext';
 
 const icon = new LeafIcon({ iconUrl: '/player.webp' });
 function useGroupPositions(group: Group): void {
@@ -12,6 +13,7 @@ function useGroupPositions(group: Group): void {
   }>({});
 
   const { showPlayerNames } = useSettings();
+  const { map } = useFilters();
 
   useEffect(() => {
     const groupValues = Object.values(group);
@@ -31,7 +33,9 @@ function useGroupPositions(group: Group): void {
     const removeablePlayerMarkers = { ...playerMarkers };
 
     const newPlayerMarkers = Object.values(group)
-      .filter((player) => player.position && player.username)
+      .filter(
+        (player) => player.position && player.username && player.map === map
+      )
       .reduce(
         (acc, player) => {
           const username = player.username!;
@@ -52,7 +56,6 @@ function useGroupPositions(group: Group): void {
               permanent: showPlayerNames,
             });
             marker.addTo(latestLeafletMap!);
-            marker.getElement()!.classList.add('leaflet-player-marker');
           }
 
           const playerImage = marker.getElement()!;
@@ -87,7 +90,7 @@ function useGroupPositions(group: Group): void {
       );
     Object.values(removeablePlayerMarkers).forEach((marker) => marker.remove());
     setPlayerMarkers(newPlayerMarkers);
-  }, [latestLeafletMap, group]);
+  }, [latestLeafletMap, group, map]);
 }
 
 export default useGroupPositions;

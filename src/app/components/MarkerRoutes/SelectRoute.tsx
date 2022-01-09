@@ -12,6 +12,7 @@ import type { MarkerRouteItem } from './MarkerRoutes';
 import Button from '../Button/Button';
 import { latestLeafletMap } from '../WorldMap/useWorldMap';
 import { findRegions } from '../WorldMap/areas';
+import { useFilters } from '../../contexts/FiltersContext';
 
 type SelectRouteProps = {
   markerRoute?: MarkerRouteItem;
@@ -28,6 +29,7 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
   const [regions, setRegions] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState(markerRoute?.isPublic || false);
   const { markers, toggleMarkerRoute, refreshMarkerRoutes } = useMarkers();
+  const { map } = useFilters();
 
   const refreshMarkers = useCallback(
     (workingLayer: leaflet.Polyline | leaflet.Layer) => {
@@ -56,9 +58,9 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
         number
       ][];
       setPositions(positions);
-      setRegions(findRegions(positions));
+      setRegions(findRegions(positions, map));
     },
-    [markers]
+    [markers, map]
   );
 
   useEffect(() => {
@@ -153,8 +155,10 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
       name,
       isPublic,
       positions,
+      map,
       markersByType,
     };
+
     const action = markerRoute
       ? patchMarkerRoute(markerRoute._id, partialMarkerRoute)
       : postMarkerRoute(partialMarkerRoute);

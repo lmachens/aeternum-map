@@ -18,10 +18,11 @@ function getRegions() {
 
 function useRegionBorders(
   showRegionBorders: boolean,
-  leafletMap: leaflet.Map | null
+  leafletMap: leaflet.Map | null,
+  show: boolean
 ) {
   useEffect(() => {
-    if (!showRegionBorders || !leafletMap) {
+    if (!showRegionBorders || !leafletMap || !show) {
       return;
     }
     const regions = getRegions();
@@ -30,7 +31,7 @@ function useRegionBorders(
     return () => {
       regions.forEach((region) => region.removeFrom(leafletMap));
     };
-  }, [leafletMap, showRegionBorders]);
+  }, [leafletMap, showRegionBorders, show]);
 }
 
 export default useRegionBorders;

@@ -36,6 +36,9 @@ function ensureMarkersSchema(): Promise<Document> {
           type: {
             bsonType: 'string',
           },
+          map: {
+            bsonType: 'string',
+          },
           position: {
             bsonType: 'array',
             items: {

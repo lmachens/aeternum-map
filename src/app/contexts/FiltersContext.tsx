@@ -1,16 +1,22 @@
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { createContext, useContext } from 'react';
 import { mapFilters } from '../components/MapFilter/mapFilters';
+import { DEFAULT_MAP_NAME } from '../components/WorldMap/maps';
 import { usePersistentState } from '../utils/storage';
 
-type FiltersContextValue = [
-  string[],
-  (value: string[] | ((value: string[]) => string[])) => void
-];
-const FiltersContext = createContext<FiltersContextValue>([
-  [],
-  () => undefined,
-]);
+type FiltersContextValue = {
+  filters: string[];
+  setFilters: (value: string[] | ((value: string[]) => string[])) => void;
+  map: string;
+  setMap: (map: string) => void;
+};
+const FiltersContext = createContext<FiltersContextValue>({
+  filters: [],
+  setFilters: () => undefined,
+  map: DEFAULT_MAP_NAME,
+  setMap: () => undefined,
+});
 
 type FiltersProviderProps = {
   children: ReactNode;
@@ -24,9 +30,10 @@ export function FiltersProvider({
     'filters',
     defaultFilters
   );
+  const [map, setMap] = useState(DEFAULT_MAP_NAME);
 
   return (
-    <FiltersContext.Provider value={[filters, setFilters]}>
+    <FiltersContext.Provider value={{ filters, setFilters, map, setMap }}>
       {children}
     </FiltersContext.Provider>
   );

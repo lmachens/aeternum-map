@@ -29,6 +29,9 @@ function ensureMarkerRoutesSchema(): Promise<Document> {
           name: {
             bsonType: 'string',
           },
+          map: {
+            bsonType: 'string',
+          },
           userId: {
             bsonType: 'string',
           },

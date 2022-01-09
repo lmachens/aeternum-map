@@ -30,10 +30,8 @@ function WorldMap({
   onMarkerEdit,
 }: WorldMapProps): JSX.Element {
   const { addModal, closeLatestModal } = useModal();
-  const [worldName, setWorldName] = useState('NewWorld_VitaeEterna');
 
   const { leafletMap, elementRef } = useWorldMap({
-    worldName,
     hideControls,
     initialZoom,
   });
@@ -58,12 +56,6 @@ function WorldMap({
     });
   }
   usePlayerPosition({ isMinimap, leafletMap, rotate });
-
-  useEffect(() => {
-    setTimeout(() => {
-      setWorldName('NW_Dungeon_Edengrove_00');
-    }, 5000);
-  }, []);
 
   return (
     <div

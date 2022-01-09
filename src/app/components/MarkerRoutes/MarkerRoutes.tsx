@@ -9,6 +9,7 @@ import { escapeRegExp } from '../../utils/regExp';
 import { usePersistentState } from '../../utils/storage';
 import ActionButton from '../ActionControl/ActionButton';
 import { mapFilters } from '../MapFilter/mapFilters';
+import SelectMap from '../MapFilter/SelectMap';
 import SearchInput from '../SearchInput/SearchInput';
 import { regionNames } from '../WorldMap/areas';
 import { deleteMarkerRoute, patchFavoriteMarkerRoute } from './api';
@@ -21,6 +22,7 @@ export type MarkerRouteItem = {
   userId: string;
   username: string;
   isPublic: boolean;
+  map?: string;
   positions: [number, number][];
   regions: string[];
   markersByType: {
@@ -103,7 +105,7 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
     clearMarkerRoutes,
     toggleMarkerRoute,
     refreshMarkerRoutes,
-    allMarkerRoutes,
+    visibleMarkerRoutes,
   } = useMarkers();
   const { account, refreshAccount } = useAccount();
   const [sortBy, setSortBy] = usePersistentState<SortBy>(
@@ -115,7 +117,7 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
     'all'
   );
   const [search, setSearch] = usePersistentState('searchRoutes', '');
-  const [filters, setFilters] = useFilters();
+  const { filters, setFilters } = useFilters();
 
   useEffect(() => {
     refreshMarkerRoutes();
@@ -169,10 +171,10 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
 
   const sortedMarkerRoutes = useMemo(
     () =>
-      allMarkerRoutes
+      visibleMarkerRoutes
         .filter(handleFilter(filter, search, account))
         .sort(handleSort(sortBy, filters)),
-    [sortBy, allMarkerRoutes, filters, filter, search]
+    [sortBy, visibleMarkerRoutes, filters, filter, search]
   );
 
   function handleEdit(markerRoute: MarkerRouteItem) {
@@ -193,6 +195,7 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
 
   return (
     <section className={styles.container}>
+      <SelectMap />
       <div className={styles.actions}>
         <ActionButton
           disabled={!account}
@@ -236,6 +239,7 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
         </select>
       </div>
       <div className={styles.items}>
+        {sortedMarkerRoutes.length === 0 && 'No routes available'}
         {sortedMarkerRoutes.map((markerRoute) => (
           <MarkerRoute
             key={markerRoute._id}

@@ -12,6 +12,10 @@ import { SCREENSHOTS_PATH } from '../env';
 import { getScreenshotsCollection } from '../screenshots/collection';
 import { ensureAuthenticated } from '../auth/middlewares';
 import etag from 'etag';
+import {
+  DEFAULT_MAP_NAME,
+  mapDetails,
+} from '../../app/components/WorldMap/maps';
 
 const markersRouter = Router();
 
@@ -351,6 +355,7 @@ async function bodyToMarker(
 ): Promise<Partial<MarkerDTO> | false> {
   const {
     type,
+    map,
     position,
     name,
     level,
@@ -366,6 +371,14 @@ async function bodyToMarker(
     mapFilters.some((filter) => filter.type === type)
   ) {
     marker.type = type;
+  }
+
+  if (
+    typeof map === 'string' &&
+    map !== DEFAULT_MAP_NAME &&
+    mapDetails.some((mapDetail) => mapDetail.name === map)
+  ) {
+    marker.map = map;
   }
 
   if (Array.isArray(position)) {

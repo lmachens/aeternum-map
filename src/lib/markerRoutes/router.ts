@@ -6,13 +6,17 @@ import { getMarkerRoutesCollection } from './collection';
 import { postToDiscord } from '../discord';
 import { ensureAuthenticated } from '../auth/middlewares';
 import { findRegions } from '../../app/components/WorldMap/areas';
+import {
+  DEFAULT_MAP_NAME,
+  mapDetails,
+} from '../../app/components/WorldMap/maps';
 
 const markerRoutesRouter = Router();
 
 const MAX_MARKER_ROUTE_LENGTH = 100;
 markerRoutesRouter.post('/', ensureAuthenticated, async (req, res, next) => {
   try {
-    const { name, isPublic, positions, markersByType } = req.body;
+    const { name, isPublic, positions, markersByType, map } = req.body;
     const account = req.account!;
 
     if (
@@ -37,12 +41,20 @@ markerRoutesRouter.post('/', ensureAuthenticated, async (req, res, next) => {
       positions: positions.map((position) =>
         position.map((part: number) => new Double(part))
       ) as [Double, Double][],
-      regions: findRegions(positions),
+      regions: findRegions(positions, map),
       markersByType,
       isPublic: Boolean(isPublic),
       createdAt: now,
       updatedAt: now,
     };
+
+    if (
+      typeof map === 'string' &&
+      map !== DEFAULT_MAP_NAME &&
+      mapDetails.some((mapDetail) => mapDetail.name === map)
+    ) {
+      markerRoute.map = map;
+    }
 
     const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const existingMarkerRoute = await getMarkerRoutesCollection().findOne({
@@ -157,7 +169,7 @@ markerRoutesRouter.patch(
       const account = req.account!;
 
       const { markerRouteId } = req.params;
-      const { name, isPublic, positions, markersByType } = req.body;
+      const { name, isPublic, positions, markersByType, map } = req.body;
 
       if (!ObjectId.isValid(markerRouteId)) {
         res.status(400).send('Invalid payload');
@@ -194,8 +206,15 @@ markerRoutesRouter.patch(
       if (typeof isPublic === 'boolean') {
         markerRoute.isPublic = isPublic;
       }
+      if (
+        typeof map === 'string' &&
+        map !== DEFAULT_MAP_NAME &&
+        mapDetails.some((mapDetail) => mapDetail.name === map)
+      ) {
+        markerRoute.map = map;
+      }
       if (Array.isArray(positions)) {
-        markerRoute.regions = findRegions(positions);
+        markerRoute.regions = findRegions(positions, map);
         markerRoute.positions = positions.map((position) =>
           position.map((part: number) => new Double(part))
         ) as [Double, Double][];

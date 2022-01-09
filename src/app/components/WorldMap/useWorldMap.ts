@@ -6,7 +6,9 @@ import { coordinates as playerCoordinates } from './usePlayerPosition';
 import { getJSONItem, setJSONItem } from '../../utils/storage';
 import { useSettings } from '../../contexts/SettingsContext';
 import useRegionBorders from './useRegionBorders';
-import { worlds } from './worlds';
+import { DEFAULT_MAP_NAME, mapDetails } from './maps';
+import { useFilters } from '../../contexts/FiltersContext';
+
 const { VITE_API_ENDPOINT = '' } = import.meta.env;
 
 function toThreeDigits(number: number): string {
@@ -45,22 +47,18 @@ const WorldTiles = (map: string) =>
   });
 
 type UseWorldMapProps = {
-  worldName: string;
   hideControls?: boolean;
   initialZoom?: number;
 };
 export let latestLeafletMap: leaflet.Map | null = null;
-function useWorldMap({
-  worldName = 'map',
-  hideControls,
-  initialZoom,
-}: UseWorldMapProps): {
+function useWorldMap({ hideControls, initialZoom }: UseWorldMapProps): {
   elementRef: React.MutableRefObject<HTMLDivElement | null>;
   leafletMap: leaflet.Map | null;
 } {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [leafletMap, setLeafletMap] = useState<leaflet.Map | null>(null);
   const { showRegionBorders } = useSettings();
+  const { map } = useFilters();
 
   useEffect(() => {
     if (leafletMap && initialZoom) {
@@ -68,46 +66,62 @@ function useWorldMap({
     }
   }, [leafletMap, initialZoom]);
 
-  useRegionBorders(showRegionBorders, leafletMap);
+  useRegionBorders(showRegionBorders, leafletMap, map === DEFAULT_MAP_NAME);
 
   useEffect(() => {
     const mapElement = elementRef.current;
-    const world = worlds.find((world) => world.name === worldName);
-    if (!mapElement || !world) {
+    const mapDetail = mapDetails.find((mapDetail) => mapDetail.name === map);
+    if (!mapElement || !mapDetail) {
+      return;
+    }
+    const latLngBounds = leaflet.latLngBounds(mapDetail.maxBounds);
+
+    const setView = (leafletMap: leaflet.Map) => {
+      const mapPosition = getJSONItem<{
+        y: number;
+        x: number;
+        zoom: number;
+      } | null>(`mapPosition-${map}`, null);
+      if (mapPosition) {
+        leafletMap.setView(
+          [mapPosition.y, mapPosition.x],
+          initialZoom || mapPosition.zoom,
+          { animate: false }
+        );
+      } else {
+        leafletMap.fitBounds(latLngBounds, { animate: false });
+      }
+    };
+
+    if (latestLeafletMap) {
+      const leafletMap = latestLeafletMap;
+      const worldTiles = new (WorldTiles(mapDetail.folder))();
+      worldTiles.addTo(leafletMap);
+      leafletMap.setMaxZoom(mapDetail.maxZoom);
+      leafletMap.setMinZoom(mapDetail.minZoom);
+      leafletMap.setMaxBounds(latLngBounds);
+      setView(leafletMap);
       return;
     }
 
-    const zoom = initialZoom || world.defaultZoom;
-    const map = leaflet.map(mapElement, {
+    const leafletMap = leaflet.map(mapElement, {
       preferCanvas: true,
       crs: worldCRS,
-      maxZoom: world.maxZoom,
-      minZoom: world.minZoom,
-      zoom: zoom,
+      maxZoom: mapDetail.maxZoom,
+      minZoom: mapDetail.minZoom,
       attributionControl: false,
       zoomControl: false,
-      maxBounds: world.maxBounds,
+      zoom: initialZoom || 4,
+      maxBounds: latLngBounds,
     });
-    latestLeafletMap = map;
-    setLeafletMap(map);
 
-    const mapPosition = getJSONItem<{
-      y: number;
-      x: number;
-      zoom: number;
-    } | null>(`mapPosition-${worldName}`, null);
+    setLeafletMap(leafletMap);
 
-    if (mapPosition) {
-      map.setView(
-        [mapPosition.y, mapPosition.x],
-        initialZoom || mapPosition.zoom
-      );
-    } else {
-      map.fitBounds(world.maxBounds);
-    }
+    latestLeafletMap = leafletMap;
+    setView(leafletMap);
 
     if (!hideControls) {
-      leaflet.control.zoom({ position: 'topleft' }).addTo(map);
+      leaflet.control.zoom({ position: 'topleft' }).addTo(leafletMap);
 
       const divElement = leaflet.DomUtil.create('div', 'leaflet-position');
       const handleMouseMove = (event: leaflet.LeafletMouseEvent) => {
@@ -132,18 +146,17 @@ function useWorldMap({
       });
 
       const coordinates = new CoordinatesControl({ position: 'bottomright' });
-      playerCoordinates.addTo(map);
+      playerCoordinates.addTo(leafletMap);
 
-      coordinates.addTo(map);
+      coordinates.addTo(leafletMap);
     }
-    const worldTiles = new (WorldTiles(world.folder))();
-    worldTiles.addTo(map);
+    const worldTiles = new (WorldTiles(mapDetail.folder))();
+    worldTiles.addTo(leafletMap);
 
     return () => {
-      setLeafletMap(null);
-      map.remove();
+      worldTiles.remove();
     };
-  }, [elementRef, worldName]);
+  }, [elementRef, map]);
 
   useEffect(() => {
     if (!leafletMap) {
@@ -154,7 +167,7 @@ function useWorldMap({
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         const center = leafletMap.getCenter();
-        setJSONItem(`mapPosition-${worldName}`, {
+        setJSONItem(`mapPosition-${map}`, {
           x: center.lng,
           y: center.lat,
           zoom: leafletMap.getZoom(),
@@ -166,7 +179,7 @@ function useWorldMap({
     return () => {
       leafletMap.off('moveend', handleMoveEnd);
     };
-  }, [leafletMap]);
+  }, [leafletMap, map]);
 
   return { elementRef, leafletMap };
 }

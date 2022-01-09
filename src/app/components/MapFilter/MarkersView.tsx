@@ -10,12 +10,13 @@ import SearchInput from '../SearchInput/SearchInput';
 import PresetSelect from '../PresetSelect/PresetSelect';
 import { useState } from 'react';
 import type { Preset } from '../PresetSelect/presets';
+import SelectMap from './SelectMap';
 
 type MarkersViewProps = {
   onAdd: () => void;
 };
 function MarkersView({ onAdd }: MarkersViewProps): JSX.Element {
-  const [filters, setFilters] = useFilters();
+  const { filters, setFilters } = useFilters();
   const [search, setSearch] = usePersistentState('searchMarkerTypes', '');
   const [preset, setPreset] = useState<Preset | null>(null);
   const { account } = useAccount();
@@ -38,6 +39,7 @@ function MarkersView({ onAdd }: MarkersViewProps): JSX.Element {
   }
   return (
     <section className={styles.container}>
+      <SelectMap />
       <div className={styles.actions}>
         <ActionButton disabled={!account} onClick={onAdd}>
           {account ? 'Add resource' : 'Login to add resource'}

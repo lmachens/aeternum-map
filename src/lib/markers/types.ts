@@ -2,6 +2,7 @@ import type { Double } from 'mongodb';
 
 export type MarkerDTO = {
   type: string;
+  map?: string;
   position: [Double, Double, Double];
   name?: string;
   level?: number;

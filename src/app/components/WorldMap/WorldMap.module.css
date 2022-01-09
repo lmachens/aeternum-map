@@ -34,10 +34,6 @@
   text-shadow: 1px 1px 2px #000000;
 }
 
-:global(.leaflet-player-marker) {
-  transition: transform 1s linear;
-}
-
 :global(.leaflet-own-player-marker) {
   pointer-events: none !important;
 }

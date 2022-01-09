@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useEffect } from 'react';
 import { createContext, useContext } from 'react';
 import { findRegion, findLocation } from '../components/WorldMap/areas';
+import { DEFAULT_MAP_NAME, mapDetails } from '../components/WorldMap/maps';
 import { getGameInfo, useIsNewWorldRunning } from '../utils/games';
 import { writeError } from '../utils/logs';
 
@@ -38,15 +39,19 @@ export function PositionProvider({
   const [map, setMap] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const newWorldIsRunning = useIsNewWorldRunning();
-
+  window.setMap = setMap;
   const location = useMemo(
-    () => position && findLocation(position.location),
-    [position]
+    () =>
+      map === DEFAULT_MAP_NAME && position && findLocation(position.location),
+    [position, map]
   );
-  const region = useMemo(
-    () => position && findRegion(position.location),
-    [position]
-  );
+  const region = useMemo(() => {
+    if (map && map !== DEFAULT_MAP_NAME) {
+      const world = mapDetails.find((mapDetail) => mapDetail.name === map);
+      return world?.title || 'Unknown';
+    }
+    return position && findRegion(position.location);
+  }, [position, map]);
 
   useEffect(() => {
     if (!newWorldIsRunning) {
