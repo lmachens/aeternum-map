@@ -104,6 +104,7 @@ function useWorldMap({ hideControls, initialZoom }: UseWorldMapProps): {
       leafletMap.setMinZoom(mapDetail.minZoom);
       leafletMap.setMaxBounds(latLngBounds);
       setView(leafletMap);
+
       return () => {
         worldTiles.remove();
       };
@@ -118,6 +119,7 @@ function useWorldMap({ hideControls, initialZoom }: UseWorldMapProps): {
       zoomControl: false,
       zoom: initialZoom || 4,
       maxBounds: latLngBounds,
+      zoomSnap: 0,
     });
 
     setLeafletMap(leafletMap);

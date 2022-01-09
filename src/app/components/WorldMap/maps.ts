@@ -24,25 +24,25 @@ export const mapDetails: Map[] = [
     ],
   },
   {
+    name: 'nw_dungeon_Windsward_00',
+    title: 'Amrine Excavation',
+    folder: 'nw_dungeon_windsward_00',
+    maxZoom: 6,
+    minZoom: 3,
+    maxBounds: [
+      [500, 600],
+      [1000, 1050],
+    ],
+  },
+  {
     name: 'NW_Dungeon_Edengrove_00',
     title: 'Garden of Genesis',
     folder: 'nw_dungeon_edengrove_00',
     maxZoom: 6,
     minZoom: 3,
     maxBounds: [
-      [800, 100],
-      [2000, 1200],
-    ],
-  },
-  {
-    name: 'NW_Dungeon_Everfall_00',
-    title: 'Starstone Barrows',
-    folder: 'nw_dungeon_everfall_00',
-    maxZoom: 6,
-    minZoom: 3,
-    maxBounds: [
-      [200, 100],
-      [900, 1200],
+      [950, 300],
+      [1600, 1000],
     ],
   },
   {
@@ -52,19 +52,30 @@ export const mapDetails: Map[] = [
     maxZoom: 6,
     minZoom: 3,
     maxBounds: [
-      [300, 200],
-      [1100, 1100],
+      [530, 600],
+      [1000, 1000],
     ],
   },
   {
-    name: 'nw_Dungeon_Restlessshores_01',
+    name: 'NW_Dungeon_Everfall_00',
+    title: 'Starstone Barrows',
+    folder: 'nw_dungeon_everfall_00',
+    maxZoom: 6,
+    minZoom: 3,
+    maxBounds: [
+      [350, 280],
+      [740, 1000],
+    ],
+  },
+  {
+    name: 'NW_Dungeon_Restlessshores_01',
     title: 'The Depths',
     folder: 'nw_dungeon_restlessshores_01',
     maxZoom: 6,
     minZoom: 3,
     maxBounds: [
-      [300, 200],
-      [1100, 1100],
+      [750, 650],
+      [1400, 1250],
     ],
   },
 ];
