@@ -44,6 +44,12 @@ function ensureMarkerRoutesSchema(): Promise<Document> {
           favorites: {
             bsonType: 'int',
           },
+          forks: {
+            bsonType: 'int',
+          },
+          origin: {
+            bsonType: 'objectId',
+          },
           positions: {
             bsonType: 'array',
             items: {

@@ -20,7 +20,8 @@ function FavoriteButton({
       }}
       title={`${favorites} times favored`}
     >
-      🤘 {favorites}
+      <span>🤘</span>
+      {favorites}
     </button>
   );
 }

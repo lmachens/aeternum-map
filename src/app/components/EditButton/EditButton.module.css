@@ -1,9 +1,17 @@
 .button {
+  border: 1px solid var(--color-shade-three);
   opacity: 0.5;
   transition: 0.2s ease-in;
-  padding: 0;
+  border-radius: 2px;
+  min-width: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  height: 1.5rem;
 }
 
 .button:hover {
   opacity: 1;
+  border-color: var(--color-shade-four);
 }

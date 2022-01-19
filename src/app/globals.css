@@ -69,6 +69,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: var(--color-text);
   overflow: hidden;
+  line-height: 100%;
 }
 
 a {
@@ -113,6 +114,7 @@ a {
   color: var(--color-text);
   transition: all 0.1s ease-in;
   font-family: var(--font-family-secondary);
+  line-height: 100%;
 }
 
 input:disabled {

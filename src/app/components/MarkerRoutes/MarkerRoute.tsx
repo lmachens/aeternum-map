@@ -5,6 +5,7 @@ import { classNames } from '../../utils/styles';
 import { toTimeAgo } from '../../utils/dates';
 import EditButton from '../EditButton/EditButton';
 import FavoriteButton from '../FavoriteButton/FavoriteButton';
+import ForkButton from '../ForkButton/ForkButton';
 
 type MarkerRouteProps = {
   markerRoute: MarkerRouteItem;
@@ -14,6 +15,7 @@ type MarkerRouteProps = {
   onClick: () => void;
   isFavorite: boolean;
   onFavorite: () => void;
+  onFork: (name: string) => void;
   onEdit: () => void;
   isOwner: boolean;
 };
@@ -25,6 +27,7 @@ function MarkerRoute({
   onClick,
   onFavorite,
   isFavorite,
+  onFork,
   onEdit,
   isOwner,
 }: MarkerRouteProps): JSX.Element {
@@ -55,6 +58,11 @@ function MarkerRoute({
           onClick={onFavorite}
           isFavorite={isFavorite}
           favorites={markerRoute.favorites || 0}
+        />
+        <ForkButton
+          onFork={onFork}
+          originalName={markerRoute.name}
+          forked={markerRoute.forks || 0}
         />
         {editable && <EditButton onClick={onEdit} />}
       </div>

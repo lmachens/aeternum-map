@@ -30,8 +30,7 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
   const [name, setName] = useState(markerRoute?.name || '');
   const [regions, setRegions] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState(markerRoute?.isPublic || false);
-  const { markers, markerRoutes, toggleMarkerRoute, refreshMarkerRoutes } =
-    useMarkers();
+  const { markers, toggleMarkerRoute, refreshMarkerRoutes } = useMarkers();
   const { map } = useFilters();
 
   const refreshMarkers = useCallback(

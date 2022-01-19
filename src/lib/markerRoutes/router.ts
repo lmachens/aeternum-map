@@ -16,7 +16,7 @@ const markerRoutesRouter = Router();
 const MAX_MARKER_ROUTE_LENGTH = 100;
 markerRoutesRouter.post('/', ensureAuthenticated, async (req, res, next) => {
   try {
-    const { name, isPublic, positions, markersByType, map } = req.body;
+    const { name, isPublic, positions, markersByType, map, origin } = req.body;
     const account = req.account!;
 
     if (
@@ -48,6 +48,10 @@ markerRoutesRouter.post('/', ensureAuthenticated, async (req, res, next) => {
       updatedAt: now,
     };
 
+    if (ObjectId.isValid(origin)) {
+      markerRoute.origin = new ObjectId(origin);
+    }
+
     if (
       typeof map === 'string' &&
       map !== DEFAULT_MAP_NAME &&
@@ -70,10 +74,19 @@ markerRoutesRouter.post('/', ensureAuthenticated, async (req, res, next) => {
       res.status(500).send('Error inserting marker');
       return;
     }
+    if (markerRoute.origin) {
+      await getMarkerRoutesCollection().updateOne(
+        { _id: new ObjectId(markerRoute.origin) },
+        { $inc: { forks: 1 } }
+      );
+    }
+
     res.status(200).json(markerRoute);
 
     postToDiscord(
-      `🗺️ New route ${name} added by ${account.name}`,
+      `🗺️ ${markerRoute.origin ? 'Forked' : 'New'} route ${name} added by ${
+        account.name
+      }`,
       markerRoute.isPublic
     );
   } catch (error) {
@@ -150,6 +163,13 @@ markerRoutesRouter.delete(
         res.status(404).end(`No marker route found for id ${markerRouteId}`);
         return;
       }
+      if (markerRoute.origin) {
+        await getMarkerRoutesCollection().updateOne(
+          { _id: new ObjectId(markerRoute.origin) },
+          { $inc: { forks: -1 } }
+        );
+      }
+
       res.status(200).json({});
       postToDiscord(
         `🗺️💀 Route ${markerRoute.name} deleted by ${account.name}`,

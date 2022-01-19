@@ -13,7 +13,7 @@ import { mapFilters } from '../MapFilter/mapFilters';
 import SelectMap from '../MapFilter/SelectMap';
 import SearchInput from '../SearchInput/SearchInput';
 import { regionNames } from '../WorldMap/areas';
-import { patchFavoriteMarkerRoute } from './api';
+import { patchFavoriteMarkerRoute, postMarkerRoute } from './api';
 import MarkerRoute from './MarkerRoute';
 import styles from './MarkerRoutes.module.css';
 
@@ -30,6 +30,7 @@ export type MarkerRouteItem = {
     [type: string]: number;
   };
   favorites?: number;
+  forks?: number;
   createdAt: string;
 };
 
@@ -176,6 +177,28 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
     onEdit(markerRoute);
   }
 
+  async function handleFork(markerRoute: MarkerRouteItem, name: string) {
+    try {
+      const newMarkerRoute = {
+        name: name,
+        isPublic: false,
+        positions: markerRoute.positions,
+        markersByType: markerRoute.markersByType,
+        map: markerRoute.map,
+        origin: markerRoute._id,
+      };
+
+      const forkedMarkerRoute = await notify(postMarkerRoute(newMarkerRoute), {
+        success: 'Fork added 👌',
+      });
+
+      await refreshMarkerRoutes();
+      toggleMarkerRoute(forkedMarkerRoute);
+    } catch (error) {
+      writeError(error);
+    }
+  }
+
   return (
     <section className={styles.container}>
       <SelectMap />
@@ -242,6 +265,7 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
             )}
             onFavorite={() => handleFavorite(markerRoute._id)}
             onEdit={() => handleEdit(markerRoute)}
+            onFork={(name) => handleFork(markerRoute, name)}
           />
         ))}
         {sortedMarkerRoutes.length > limit && (

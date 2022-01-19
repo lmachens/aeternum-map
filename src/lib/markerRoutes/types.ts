@@ -1,4 +1,4 @@
-import type { Double } from 'mongodb';
+import type { Double, ObjectId } from 'mongodb';
 
 export type MarkerRouteDTO = {
   name: string;
@@ -11,6 +11,9 @@ export type MarkerRouteDTO = {
   markersByType: {
     [type: string]: number;
   };
+  favorites?: number;
+  forks?: number;
+  origin?: ObjectId;
   createdAt: Date;
   updatedAt: Date;
 };
