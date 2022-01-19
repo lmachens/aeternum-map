@@ -6,13 +6,15 @@ import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import leaflet from 'leaflet';
 import MarkerTypes from './MarkerTypes';
 import { notify } from '../../utils/notifications';
-import { patchMarkerRoute, postMarkerRoute } from './api';
+import { deleteMarkerRoute, patchMarkerRoute, postMarkerRoute } from './api';
 import { useMarkers } from '../../contexts/MarkersContext';
 import type { MarkerRouteItem } from './MarkerRoutes';
 import Button from '../Button/Button';
 import { latestLeafletMap } from '../WorldMap/useWorldMap';
 import { findRegions } from '../WorldMap/areas';
 import { useFilters } from '../../contexts/FiltersContext';
+import { writeError } from '../../utils/logs';
+import DeleteButton from '../DeleteButton/DeleteButton';
 
 type SelectRouteProps = {
   markerRoute?: MarkerRouteItem;
@@ -28,7 +30,8 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
   const [name, setName] = useState(markerRoute?.name || '');
   const [regions, setRegions] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState(markerRoute?.isPublic || false);
-  const { markers, toggleMarkerRoute, refreshMarkerRoutes } = useMarkers();
+  const { markers, markerRoutes, toggleMarkerRoute, refreshMarkerRoutes } =
+    useMarkers();
   const { map } = useFilters();
 
   const refreshMarkers = useCallback(
@@ -151,24 +154,46 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
   }, []);
 
   async function handleSave() {
-    const partialMarkerRoute = {
-      name,
-      isPublic,
-      positions,
-      map,
-      markersByType,
-    };
+    try {
+      const partialMarkerRoute = {
+        name,
+        isPublic,
+        positions,
+        map,
+        markersByType,
+      };
 
-    const action = markerRoute
-      ? patchMarkerRoute(markerRoute._id, partialMarkerRoute)
-      : postMarkerRoute(partialMarkerRoute);
-    const updatedMarkerRoute = await notify(action, {
-      success: markerRoute ? 'Route updated 👌' : 'Route added 👌',
-    });
+      const action = markerRoute
+        ? patchMarkerRoute(markerRoute._id, partialMarkerRoute)
+        : postMarkerRoute(partialMarkerRoute);
+      const updatedMarkerRoute = await notify(action, {
+        success: markerRoute ? 'Route updated 👌' : 'Route added 👌',
+      });
 
-    toggleMarkerRoute(updatedMarkerRoute);
-    await refreshMarkerRoutes();
-    onClose();
+      toggleMarkerRoute(updatedMarkerRoute);
+      await refreshMarkerRoutes();
+      onClose();
+    } catch (error) {
+      writeError(error);
+    }
+  }
+
+  async function handleRemove(): Promise<void> {
+    try {
+      if (!markerRoute) {
+        return;
+      }
+      await notify(deleteMarkerRoute(markerRoute._id), {
+        success: 'Route deleted 👌',
+      });
+
+      toggleMarkerRoute(markerRoute);
+
+      await refreshMarkerRoutes();
+      onClose();
+    } catch (error) {
+      writeError(error);
+    }
   }
 
   return (
@@ -196,6 +221,13 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
         Save Route {!name && '(Name missing)'}
       </Button>
       <Button onClick={onClose}>Cancel</Button>
+      {markerRoute && (
+        <DeleteButton
+          variant="text"
+          onClick={handleRemove}
+          title={`Do you really want to delete ${markerRoute.name}?`}
+        />
+      )}
       <small>Right click in edit mode to remove a vertex</small>
     </div>
   );

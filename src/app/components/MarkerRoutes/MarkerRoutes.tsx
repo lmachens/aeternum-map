@@ -13,7 +13,7 @@ import { mapFilters } from '../MapFilter/mapFilters';
 import SelectMap from '../MapFilter/SelectMap';
 import SearchInput from '../SearchInput/SearchInput';
 import { regionNames } from '../WorldMap/areas';
-import { deleteMarkerRoute, patchFavoriteMarkerRoute } from './api';
+import { patchFavoriteMarkerRoute } from './api';
 import MarkerRoute from './MarkerRoute';
 import styles from './MarkerRoutes.module.css';
 
@@ -129,28 +129,6 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
     setLimit(10);
   }, [sortBy, filter, search]);
 
-  async function handleRemove(markerRouteId: string): Promise<void> {
-    if (!account) {
-      return;
-    }
-    try {
-      await notify(deleteMarkerRoute(markerRouteId), {
-        success: 'Route deleted 👌',
-      });
-
-      const markerRoute = markerRoutes.find(
-        (markerRoute) => markerRoute._id == markerRouteId
-      );
-      if (markerRoute) {
-        toggleMarkerRoute(markerRoute);
-      }
-
-      refreshMarkerRoutes();
-    } catch (error) {
-      writeError(error);
-    }
-  }
-
   async function handleFavorite(markerRouteId: string): Promise<void> {
     if (!account) {
       return;
@@ -257,7 +235,6 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
             )}
             editable={isEditable(markerRoute)}
             onClick={() => toggleMarkerRoute(markerRoute)}
-            onRemove={() => handleRemove(markerRoute._id)}
             isFavorite={Boolean(
               account?.favoriteRouteIds?.some(
                 (routeId) => markerRoute._id === routeId

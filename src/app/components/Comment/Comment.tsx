@@ -42,6 +42,7 @@ function Comment({
       <div className={styles.actions}>
         {removable && (
           <DeleteButton
+            variant="icon"
             onClick={handleRemove}
             title={`Do you really want to delete ${username}'s comment?`}
           />
