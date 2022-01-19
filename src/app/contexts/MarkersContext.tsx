@@ -37,7 +37,7 @@ type MarkersContextProps = {
   ) => void;
   markerRoutes: MarkerRouteItem[];
   clearMarkerRoutes: () => void;
-  toggleMarkerRoute: (markerRoute: MarkerRouteItem) => void;
+  toggleMarkerRoute: (markerRoute: MarkerRouteItem, force?: boolean) => void;
   visibleMarkers: MarkerBasic[];
   refresh: () => void;
   mode: Mode;
@@ -166,14 +166,14 @@ export function MarkersProvider({
     });
   }, [filters, markers, hiddenMarkerIds, temporaryHiddenMarkerIDs, map]);
 
-  const toggleMarkerRoute = (markerRoute: MarkerRouteItem) => {
+  const toggleMarkerRoute = (markerRoute: MarkerRouteItem, force?: boolean) => {
     const markerRoutesClone = [...markerRoutes];
     const index = markerRoutesClone.findIndex(
       (targetMarkerRoute) => targetMarkerRoute._id === markerRoute._id
     );
-    if (index > -1) {
+    if (index > -1 && force !== true) {
       markerRoutesClone.splice(index, 1);
-    } else {
+    } else if (force !== false) {
       const types = Object.keys(markerRoute.markersByType);
       setFilters((filters) => [
         ...filters,

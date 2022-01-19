@@ -169,7 +169,7 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
         success: markerRoute ? 'Route updated 👌' : 'Route added 👌',
       });
 
-      toggleMarkerRoute(updatedMarkerRoute);
+      toggleMarkerRoute(updatedMarkerRoute, true);
       await refreshMarkerRoutes();
       onClose();
     } catch (error) {
@@ -186,7 +186,7 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
         success: 'Route deleted 👌',
       });
 
-      toggleMarkerRoute(markerRoute);
+      toggleMarkerRoute(markerRoute, true);
 
       await refreshMarkerRoutes();
       onClose();

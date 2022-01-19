@@ -162,13 +162,7 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
     [sortBy, visibleMarkerRoutes, filters, filter, search]
   );
   function handleEdit(markerRoute: MarkerRouteItem) {
-    if (
-      markerRoutes.some(
-        (selectedMarkerRoute) => selectedMarkerRoute.name == markerRoute.name
-      )
-    ) {
-      toggleMarkerRoute(markerRoute);
-    }
+    toggleMarkerRoute(markerRoute, false);
     const types = Object.keys(markerRoute.markersByType);
     setFilters((filters) => [
       ...filters,
@@ -188,12 +182,13 @@ function MarkerRoutes({ onEdit }: MarkerRoutesProps): JSX.Element {
         origin: markerRoute._id,
       };
 
+      toggleMarkerRoute(markerRoute, false);
       const forkedMarkerRoute = await notify(postMarkerRoute(newMarkerRoute), {
         success: 'Fork added 👌',
       });
 
       await refreshMarkerRoutes();
-      toggleMarkerRoute(forkedMarkerRoute);
+      onEdit(forkedMarkerRoute);
     } catch (error) {
       writeError(error);
     }
