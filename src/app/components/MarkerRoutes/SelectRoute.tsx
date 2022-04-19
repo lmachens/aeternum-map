@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import styles from './SelectRoute.module.css';
 import 'leaflet';
+import './polyColor';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import leaflet from 'leaflet';
@@ -8,13 +9,16 @@ import MarkerTypes from './MarkerTypes';
 import { notify } from '../../utils/notifications';
 import { deleteMarkerRoute, patchMarkerRoute, postMarkerRoute } from './api';
 import { useMarkers } from '../../contexts/MarkersContext';
-import type { MarkerRouteItem } from './MarkerRoutes';
+import type { MarkerRouteItem, PositionNote } from './MarkerRoutes';
 import Button from '../Button/Button';
 import { latestLeafletMap } from '../WorldMap/useWorldMap';
 import { findRegions } from '../WorldMap/areas';
 import { useFilters } from '../../contexts/FiltersContext';
 import { writeError } from '../../utils/logs';
 import DeleteButton from '../DeleteButton/DeleteButton';
+import ColorHash from 'color-hash';
+
+const colorHash = new ColorHash();
 
 type SelectRouteProps = {
   markerRoute?: MarkerRouteItem;
@@ -24,6 +28,7 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
   const [positions, setPositions] = useState<[number, number][]>(
     markerRoute?.positions || []
   );
+
   const [markersByType, setMarkersByType] = useState<{
     [type: string]: number;
   }>({});
@@ -88,6 +93,8 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
     toggleControls(false);
 
     let existingPolyline: leaflet.Polyline | null = null;
+    const notes: PositionNote[] = [];
+
     latestLeafletMap!.on('pm:create', (event) => {
       existingPolyline = event.layer as leaflet.Polyline;
       refreshMarkers(event.layer);
@@ -99,6 +106,56 @@ function SelectRoute({ markerRoute, onClose }: SelectRouteProps): JSX.Element {
 
       event.layer.on('pm:edit', (event) => {
         refreshMarkers(event.layer as leaflet.Polyline);
+      });
+
+      event.layer.on('pm:vertexclick', (event) => {
+        const index = event.indexPath?.[0];
+        if (index !== undefined) {
+          const select = document.createElement('select');
+          select.innerHTML = `<option value="">Select action</option><option value="floorUp">Floor up</option><option value="floorDown">Floor down</option><option value="safeArea">Safe area</option><option value="jumpUp">Jump up</option><option value="jumpDown">Jump down</option><option value="crawl">Crawl</option>`;
+
+          const popup = leaflet
+            .popup()
+            .setLatLng(event.markerEvent.target.getLatLng())
+            .setContent(select)
+            .openOn(latestLeafletMap);
+
+          select.onchange = () => {
+            popup.closePopup();
+            if (!select.value) {
+              return;
+            }
+            notes.push({
+              index: index,
+              type: select.value,
+            });
+            event.markerEvent.target.bindTooltip(select.value).openTooltip();
+
+            switch (select.value) {
+              case 'floorDown':
+              case 'floorUp':
+              case 'jumpUp':
+              case 'jumpDown':
+                {
+                  const colorParts = event.layer._parts[0].map((_, partIndex) =>
+                    notes.some(
+                      (note) =>
+                        note.index === partIndex &&
+                        ['floorUp', 'floorDown', 'jumpUp', 'jumpDown'].includes(
+                          note.type
+                        )
+                    )
+                      ? colorHash.hex(partIndex.toString())
+                      : null
+                  );
+
+                  event.layer._colorParts = colorParts;
+                  event.layer.redraw();
+                }
+                break;
+            }
+          };
+        }
       });
     });
 

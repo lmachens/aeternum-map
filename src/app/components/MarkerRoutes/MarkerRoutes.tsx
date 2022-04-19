@@ -17,6 +17,10 @@ import { patchFavoriteMarkerRoute, postMarkerRoute } from './api';
 import MarkerRoute from './MarkerRoute';
 import styles from './MarkerRoutes.module.css';
 
+export type PositionNote = {
+  index: number;
+  type: 'floorUp' | 'floorDown' | 'safeArea' | 'jumpUp' | 'jumpDown' | 'crawl';
+};
 export type MarkerRouteItem = {
   _id: string;
   name: string;
@@ -25,6 +29,7 @@ export type MarkerRouteItem = {
   isPublic: boolean;
   map?: string;
   positions: [number, number][];
+  notes?: PositionNote[];
   regions: string[];
   markersByType: {
     [type: string]: number;
